@@ -140,22 +140,23 @@ export default function PortfolioPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col md:flex-row animate-diagonal-reveal relative">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col md:flex-row relative w-full">
       
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-40">
+      <header className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-40 w-full">
         <div>
           <h1 className="font-mono font-bold text-xs text-zinc-900 dark:text-zinc-100">Ian Carlo G. Ventura</h1>
           <p className="text-[10px] font-mono text-zinc-400">Full-Stack Web Developer</p>
         </div>
         <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          type="button"
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 cursor-pointer"
           aria-label="Toggle Menu"
         >
           {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
-      </div>
+      </header>
 
       {/* Mobile Backdrop Overlay */}
       {isMobileMenuOpen && (
