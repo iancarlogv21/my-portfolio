@@ -59,7 +59,7 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className="w-64 border-r border-zinc-200/50 dark:border-zinc-800/50 p-5 flex flex-col justify-between h-screen sticky top-0 bg-white/75 dark:bg-zinc-950/80 backdrop-blur-xl transition-colors duration-200 select-none z-50 overflow-y-auto shadow-sm">
+    <aside className="w-64 border-r border-zinc-200/50 dark:border-zinc-800/50 p-5 flex flex-col justify-between h-screen sticky top-0 bg-white/95 dark:bg-zinc-950/95 md:backdrop-blur-xl backdrop-blur-sm transition-colors duration-200 select-none z-50 overflow-y-auto shadow-sm">
       <div className="space-y-6">
         
         {/* Profile Branding */}

@@ -83,7 +83,7 @@ export default function TechStackModal({ isOpen, onClose }: TechModalProps) {
     <div className="fixed inset-y-0 right-0 left-0 md:left-64 h-screen overflow-hidden z-[99999] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
       
       {/* Pinned Sticky Header */}
-      <div className="sticky top-0 z-20 px-6 md:px-12 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl flex items-center justify-between shrink-0">
+      <div className="sticky top-0 z-20 px-6 md:px-12 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 md:backdrop-blur-xl backdrop-blur-md flex items-center justify-between shrink-0">
         <div>
           <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
           <h2 className="text-lg font-mono font-bold text-zinc-900 dark:text-zinc-100">All Technical & Design Stack</h2>

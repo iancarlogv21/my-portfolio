@@ -67,7 +67,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
     <div className="fixed inset-y-0 right-0 left-0 md:left-64 h-screen overflow-hidden z-[99999] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
       
       {/* Pinned Sticky Header */}
-      <div className="sticky top-0 z-20 px-6 md:px-16 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl flex items-center justify-between shrink-0">
+      <div className="sticky top-0 z-20 px-6 md:px-16 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 md:backdrop-blur-xl backdrop-blur-md flex items-center justify-between shrink-0">
         <div>
           <h1 className="font-mono text-xl font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">03 — experience & timeline</h1>
           <p className="text-xs text-zinc-500 font-mono mt-1">Complete professional and academic history.</p>
