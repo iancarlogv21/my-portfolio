@@ -38,6 +38,7 @@ const SafeAllProjectsModal = AllProjectsModal as any;
 export default function PortfolioPage() {
   const [isTypingOpen, setIsTypingOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("about");
   
   // Lazy initialize state directly to avoid useEffect setState entirely & prevent hydration mismatches
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -79,7 +80,46 @@ export default function PortfolioPage() {
     };
   }, [isAnyModalOpen]);
 
-  /* Global Sound Listeners with Hover Throttling */
+  /* Track active section on scroll for sidebar highlighting */
+  useEffect(() => {
+    const sectionIds = [
+      "about", 
+      "blogs", 
+      "projects", 
+      "experience", 
+      "tech-stack", 
+      "certifications", 
+      "recommendations", 
+      "gallery"
+    ];
+
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const element = document.getElementById(id);
+      if (!element) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(id);
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+
+      observer.observe(element);
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach((obs) => obs.disconnect());
+    };
+  }, []);
+
+  /* Global Sound Listeners */
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const target = (e.target as HTMLElement).closest('button, a, [role="button"]');
@@ -88,19 +128,9 @@ export default function PortfolioPage() {
       }
     };
 
-    const handleGlobalMouseOver = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('button, a, [role="button"]');
-      if (target) {
-        playSound('hover');
-      }
-    };
-
     document.addEventListener('click', handleGlobalClick);
-    document.addEventListener('mouseover', handleGlobalMouseOver);
-
     return () => {
       document.removeEventListener('click', handleGlobalClick);
-      document.removeEventListener('mouseover', handleGlobalMouseOver);
     };
   }, []);
 
@@ -127,50 +157,6 @@ export default function PortfolioPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const handleToggleTheme = (val: boolean | ((prev: boolean) => boolean)) => {
-    playSound('click');
-    const nextValue = typeof val === "function" ? val(isDarkMode) : val;
-
-    if (typeof window !== "undefined" && document.startViewTransition) {
-      const button = document.querySelector('[aria-label="Toggle Theme"]');
-      let x = 50;
-      let y = window.innerHeight - 50;
-
-      if (button) {
-        const rect = button.getBoundingClientRect();
-        x = rect.left + rect.width / 2;
-        y = rect.top + rect.height / 2;
-      }
-
-      const endRadius = Math.hypot(
-        Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
-      );
-
-      const transition = document.startViewTransition(() => {
-        setIsDarkMode(nextValue);
-      });
-
-      transition.ready.then(() => {
-        document.documentElement.animate(
-          {
-            clipPath: [
-              `circle(0px at ${x}px ${y}px)`,
-              `circle(${endRadius}px at ${x}px ${y}px)`
-            ]
-          },
-          {
-            duration: 650,
-            easing: "cubic-bezier(0.25, 1, 0.5, 1)",
-            pseudoElement: "::view-transition-new(root)"
-          }
-        );
-      });
-    } else {
-      setIsDarkMode(nextValue);
-    }
-  };
-
   const handleCloseAllModals = () => {
     setIsBlogModalOpen(false);
     setIsAllProjectsOpen(false);
@@ -184,6 +170,7 @@ export default function PortfolioPage() {
   const handleNavigate = (sectionId: string) => {
     setIsMobileMenuOpen(false);
     handleCloseAllModals();
+    setActiveSection(sectionId);
 
     if (sectionId === "about") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -236,10 +223,11 @@ export default function PortfolioPage() {
       {/* Sticky Sidebar */}
       <aside className={`fixed md:sticky top-0 inset-y-0 left-0 z-50 w-64 h-screen bg-white dark:bg-zinc-950 transition-transform duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800 ${isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}>
         <Sidebar 
-          isDarkMode={isDarkMode} 
-          setIsDarkMode={handleToggleTheme} 
-          setIsTypingOpen={(val) => { setIsTypingOpen(val); setIsMobileMenuOpen(false); }}
+          isDarkMode={isDarkMode}
+          setIsDarkMode={setIsDarkMode}
+          setIsTypingOpen={setIsTypingOpen}
           onNavigate={handleNavigate}
+          activeSection={activeSection}
         />
       </aside>
 

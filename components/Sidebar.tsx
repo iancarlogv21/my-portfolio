@@ -19,13 +19,15 @@ interface SidebarProps {
   setIsDarkMode: (val: boolean | ((prev: boolean) => boolean)) => void;
   setIsTypingOpen: (val: boolean) => void;
   onNavigate: (sectionId: string) => void;
+  activeSection?: string;
 }
 
 export default function Sidebar({ 
   isDarkMode, 
   setIsDarkMode, 
   setIsTypingOpen,
-  onNavigate
+  onNavigate,
+  activeSection
 }: SidebarProps) {
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -37,6 +39,67 @@ export default function Sidebar({
     if (typeof window === 'undefined') return false;
     return localStorage.getItem('portfolio_muted') === 'true';
   });
+
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Coordinate-driven circular ripple view transition
+  const transitionTheme = (newDark: boolean, event?: React.MouseEvent<HTMLButtonElement>) => {
+    if (newDark === isDarkMode || isTransitioning) return;
+
+    if (typeof document === 'undefined') {
+      setIsDarkMode(newDark);
+      return;
+    }
+
+    const doc = document as Document & {
+      startViewTransition?: (callback: () => void) => { ready: Promise<void> };
+    };
+
+    if (!doc.startViewTransition) {
+      setIsDarkMode(newDark);
+      return;
+    }
+
+    setIsTransitioning(true);
+
+    const rect = event?.currentTarget.getBoundingClientRect();
+    const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+    const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    try {
+      const transition = doc.startViewTransition?.(() => {
+        setIsDarkMode(newDark);
+      });
+
+      transition?.ready?.then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`,
+            ],
+          },
+          {
+            duration: 450,
+            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+            pseudoElement: "::view-transition-new(root)",
+          }
+        );
+      })?.catch(() => {});
+
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 500);
+    } catch {
+      setIsDarkMode(newDark);
+      setIsTransitioning(false);
+    }
+  };
 
   const handleToggleMute = () => {
     const nextMuted = !isMuted;
@@ -67,7 +130,7 @@ export default function Sidebar({
           onClick={() => onNavigate("about")}
           className="cursor-pointer group text-left space-y-0.5"
         >
-          <h1 className="font-mono font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition">
+          <h1 className="font-mono font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors duration-200">
             Ian Carlo G. Ventura
           </h1>
           <p className="text-[11px] font-mono text-zinc-400">Full-Stack Web Developer</p>
@@ -78,6 +141,7 @@ export default function Sidebar({
           {navItems.map((item) => {
             const Icon = 'icon' in item ? item.icon : undefined;
             const isProjects = item.id === "projects";
+            const isActive = activeSection === item.id;
 
             return (
               <React.Fragment key={item.id}>
@@ -88,17 +152,25 @@ export default function Sidebar({
                 )}
                 
                 <button 
-                  onClick={() => {
+                  onClick={(e) => {
                     playSound('click');
                     onNavigate(item.id);
                   }}
-                  className={`flex items-center gap-2.5 w-full py-2 px-2.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100 active:bg-zinc-200 dark:active:bg-zinc-900 cursor-pointer ${!Icon ? "pl-[10px]" : ""}`}
+                  className={`flex items-center gap-2.5 w-full py-2 px-2.5 rounded-lg transition-all duration-200 ease-out cursor-pointer ${
+                    isActive 
+                      ? "text-zinc-900 dark:text-zinc-100 font-semibold bg-zinc-100/80 dark:bg-zinc-900/80" 
+                      : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-900/80 hover:text-zinc-900 dark:hover:text-zinc-100"
+                  }`}
                 >
                   {Icon ? (
                     <div className="w-3.5 h-3.5 flex items-center justify-center shrink-0">
-                      <Icon className="h-3.5 w-3.5 text-zinc-400" />
+                      <Icon className={`h-3.5 w-3.5 ${isActive ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-400"}`} />
                     </div>
-                  ) : null} 
+                  ) : (
+                    <span className={`w-3.5 text-center text-xs font-mono shrink-0 transition-opacity ${isActive ? "opacity-100 text-zinc-900 dark:text-zinc-100 font-bold" : "opacity-0"}`}>
+                      →
+                    </span>
+                  )} 
                   {item.label}
                 </button>
               </React.Fragment>
@@ -113,7 +185,7 @@ export default function Sidebar({
               playSound('click');
               setIsTypingOpen(true);
             }}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100 active:bg-zinc-200 dark:active:bg-zinc-900 cursor-pointer"
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100 active:bg-zinc-200 dark:active:bg-zinc-900 transition-all duration-200 ease-out cursor-pointer"
           >
             <span className="flex items-center gap-2.5">
               <Terminal className="h-3.5 w-3.5 text-zinc-400" /> Typing Test
@@ -129,20 +201,18 @@ export default function Sidebar({
           {/* Theme Pill Toggle */}
           <div className="flex items-center p-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 gap-0.5">
             <button
-              onClick={() => {
+              onClick={(e) => {
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                setIsDarkMode(prefersDark);
+                transitionTheme(prefersDark, e);
               }}
-              className="p-1.5 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer"
+              className="p-1.5 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all duration-200 ease-out cursor-pointer"
               title="System Theme"
             >
               <Monitor className="h-3.5 w-3.5" />
             </button>
             <button
-              onClick={() => {
-                setIsDarkMode(false);
-              }}
-              className={`p-1.5 rounded-full cursor-pointer ${
+              onClick={(e) => transitionTheme(false, e)}
+              className={`p-1.5 rounded-full transition-all duration-200 ease-out cursor-pointer ${
                 mounted && !isDarkMode 
                   ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs" 
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -152,10 +222,8 @@ export default function Sidebar({
               <Sun className="h-3.5 w-3.5" />
             </button>
             <button
-              onClick={() => {
-                setIsDarkMode(true);
-              }}
-              className={`p-1.5 rounded-full cursor-pointer ${
+              onClick={(e) => transitionTheme(true, e)}
+              className={`p-1.5 rounded-full transition-all duration-200 ease-out cursor-pointer ${
                 mounted && isDarkMode 
                   ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs" 
                   : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -169,7 +237,7 @@ export default function Sidebar({
           {/* Circular Mute/Unmute Button */}
           <button
             onClick={handleToggleMute}
-            className="w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 active:scale-95 cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 active:scale-95 transition-all duration-200 ease-out cursor-pointer"
             title={isMuted ? "Unmute Sounds" : "Mute Sounds"}
           >
             {isMuted ? <VolumeX className="h-4 w-4 text-zinc-900 dark:text-zinc-100" /> : <Volume2 className="h-4 w-4" />}
