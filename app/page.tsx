@@ -14,9 +14,11 @@ import AllProjectsModal from "@/components/AllProjectsModal";
 import AllDesignsModal from "@/components/AllDesignsModal";
 import TypingTestModal from "@/components/TypingTestModal";
 import TechStackModal from "@/components/TechStackModal";
+import { Menu, X } from "lucide-react";
 
 export default function PortfolioPage() {
   const [isTypingOpen, setIsTypingOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window === "undefined") return false;
     const savedTheme = localStorage.getItem("theme");
@@ -29,7 +31,6 @@ export default function PortfolioPage() {
   const [isAllDesignsOpen, setIsAllDesignsOpen] = useState(false);
   const [isTechModalOpen, setIsTechModalOpen] = useState(false);
 
-  // Centralized HTML root class synchronizer for Tailwind dark mode
   useEffect(() => {
     const root = document.documentElement;
     if (isDarkMode) {
@@ -56,7 +57,6 @@ export default function PortfolioPage() {
     const nextValue = typeof val === "function" ? val(isDarkMode) : val;
 
     if (typeof window !== "undefined" && document.startViewTransition) {
-      // Find the exact center coordinates of the theme toggle button in the sidebar
       const button = document.querySelector('[aria-label="Toggle Theme"]');
       let x = 50;
       let y = window.innerHeight - 50;
@@ -67,7 +67,6 @@ export default function PortfolioPage() {
         y = rect.top + rect.height / 2;
       }
 
-      // Calculate maximum radius required to cover the entire viewport
       const endRadius = Math.hypot(
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y)
@@ -102,6 +101,7 @@ export default function PortfolioPage() {
     setIsAllProjectsOpen(false);
     setIsAllDesignsOpen(false);
     setIsTechModalOpen(false);
+    setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -140,21 +140,40 @@ export default function PortfolioPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex animate-diagonal-reveal">
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col md:flex-row animate-diagonal-reveal relative">
       
-      <Sidebar 
-        isDarkMode={isDarkMode} 
-        setIsDarkMode={handleToggleTheme} 
-        setIsTypingOpen={setIsTypingOpen}
-        onGoHome={handleGoHome}
-        onOpenProjects={() => { handleGoHome(); setIsAllProjectsOpen(true); }}
-        onOpenDesigns={() => { handleGoHome(); setIsAllDesignsOpen(true); }}
-        onOpenTech={() => { handleGoHome(); setIsTechModalOpen(true); }}
-        onOpenCerts={() => { handleGoHome(); setIsCertModalOpen(true); }}
-      />
+      {/* Mobile Header Bar */}
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-50">
+        <div>
+          <h1 className="font-mono font-bold text-xs text-zinc-900 dark:text-zinc-100">Ian Carlo G. Ventura</h1>
+          <p className="text-[10px] font-mono text-zinc-400">Full-Stack Web Developer</p>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+          aria-label="Toggle Menu"
+        >
+          {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
 
-      <div className="flex-1 flex justify-center overflow-x-hidden">
-        <main className="w-full max-w-4xl px-8 md:px-12 py-16 space-y-16">
+      {/* Sidebar: Hidden on mobile unless menu toggle is clicked, sticky on desktop */}
+      <div className={`${isMobileMenuOpen ? "block" : "hidden"} md:block fixed md:sticky inset-y-0 left-0 z-50 w-64 h-full md:h-screen bg-white dark:bg-zinc-950`}>
+        <Sidebar 
+          isDarkMode={isDarkMode} 
+          setIsDarkMode={handleToggleTheme} 
+          setIsTypingOpen={(val) => { setIsTypingOpen(val); setIsMobileMenuOpen(false); }}
+          onGoHome={handleGoHome}
+          onOpenProjects={() => { handleGoHome(); setIsAllProjectsOpen(true); }}
+          onOpenDesigns={() => { handleGoHome(); setIsAllDesignsOpen(true); }}
+          onOpenTech={() => { handleGoHome(); setIsTechModalOpen(true); }}
+          onOpenCerts={() => { handleGoHome(); setIsCertModalOpen(true); }}
+        />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex justify-center overflow-x-hidden w-full">
+        <main className="w-full max-w-4xl px-4 md:px-12 py-8 md:py-16 space-y-12 md:space-y-16">
           <HeroAbout />
           <StatsBanner />
           <ProjectsSection onOpenAllProjects={() => setIsAllProjectsOpen(true)} />
