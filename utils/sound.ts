@@ -6,10 +6,7 @@ export const playSound = (type: 'click' | 'switch' | 'hover') => {
   if (typeof window === 'undefined') return;
 
   const isMuted = localStorage.getItem('portfolio_muted') === 'true';
-  
-  // Automatically bypass sound on mobile devices to completely eliminate main-thread audio lag
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if (isMuted || isMobile) return;
+  if (isMuted) return;
 
   const soundFiles: Record<string, string> = {
     click: '/sounds/click.mp3',
@@ -29,7 +26,9 @@ export const playSound = (type: 'click' | 'switch' | 'hover') => {
     }
 
     audio.currentTime = 0;
-    audio.play().catch(() => {});
+    audio.play().catch(() => {
+      // Silently catch autoplay/interaction restrictions on mobile
+    });
   } catch {
     // Fail gracefully
   }
