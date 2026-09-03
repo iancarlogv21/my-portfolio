@@ -1,18 +1,18 @@
 // utils/sound.ts
 
-// Preload audio elements once to avoid runtime creation overhead and main-thread stutter
 const audioCache: Record<string, HTMLAudioElement> = {};
 
 export const playSound = (type: 'click' | 'switch' | 'hover') => {
   if (typeof window === 'undefined') return;
 
-  // Check if user has muted sounds locally
   const isMuted = localStorage.getItem('portfolio_muted') === 'true';
-  if (isMuted) return;
+  
+  // Automatically bypass sound on mobile devices to completely eliminate main-thread audio lag
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMuted || isMobile) return;
 
-  // Map sound types to their source files (adjust paths if your files are named differently)
   const soundFiles: Record<string, string> = {
-    click: '/sounds/click.mp3',   // Replace with your actual sound file paths
+    click: '/sounds/click.mp3',
     switch: '/sounds/switch.mp3',
     hover: '/sounds/hover.mp3',
   };
@@ -24,16 +24,13 @@ export const playSound = (type: 'click' | 'switch' | 'hover') => {
     let audio = audioCache[type];
     if (!audio) {
       audio = new Audio(path);
-      audio.volume = 0.2; // Keep volume low and crisp
+      audio.volume = 0.10;
       audioCache[type] = audio;
     }
 
-    // Rewind to start instantly for rapid consecutive taps
     audio.currentTime = 0;
-    audio.play().catch(() => {
-      // Ignore browser autoplay restriction errors silently
-    });
+    audio.play().catch(() => {});
   } catch {
-    // Fail gracefully if audio assets aren't loaded
+    // Fail gracefully
   }
 };
