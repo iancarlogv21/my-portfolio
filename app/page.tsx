@@ -5,16 +5,25 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import HeroAbout from "@/components/HeroAbout";
 import StatsBanner from "@/components/StatsBanner";
+import BlogsSection from "@/components/BlogsSection";
 import ProjectsSection from "@/components/ProjectsSection";
-import DesignPortfolio from "@/components/DesignPortfolio";
+import ExperienceSection from "@/components/ExperienceSection";
 import TechStack from "@/components/TechStack";
 import CertificationsSection from "@/components/CertificationsSection";
+import RecommendationsSection from "@/components/RecommendationsSection";
+
+/* Full-Screen Modals */
+import BlogsModal from "@/components/BlogsModal";
+import ExperienceModal from "@/components/ExperienceModal";
+import RecommendationsModal from "@/components/RecommendationsModal";
+import GalleryModal from "@/components/GalleryModal";
 import CertificationsModal from "@/components/CertificationsModal";
 import AllProjectsModal from "@/components/AllProjectsModal";
-import AllDesignsModal from "@/components/AllDesignsModal";
 import TypingTestModal from "@/components/TypingTestModal";
 import TechStackModal from "@/components/TechStackModal";
+
 import { Menu, X } from "lucide-react";
+import { playSound } from "@/utils/sound";
 
 export default function PortfolioPage() {
   const [isTypingOpen, setIsTypingOpen] = useState(false);
@@ -28,8 +37,38 @@ export default function PortfolioPage() {
   
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
   const [isAllProjectsOpen, setIsAllProjectsOpen] = useState(false);
-  const [isAllDesignsOpen, setIsAllDesignsOpen] = useState(false);
+  const [projectModalTab, setProjectModalTab] = useState<string>("all");
   const [isTechModalOpen, setIsTechModalOpen] = useState(false);
+  
+  const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
+  const [isExpModalOpen, setIsExpModalOpen] = useState(false);
+  const [isRecModalOpen, setIsRecModalOpen] = useState(false);
+  const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
+
+  /* Global Sound Listeners with Hover Throttling */
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('button, a, [role="button"]');
+      if (target) {
+        playSound('click');
+      }
+    };
+
+    const handleGlobalMouseOver = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('button, a, [role="button"]');
+      if (target) {
+        playSound('hover');
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    document.addEventListener('mouseover', handleGlobalMouseOver);
+
+    return () => {
+      document.removeEventListener('click', handleGlobalClick);
+      document.removeEventListener('mouseover', handleGlobalMouseOver);
+    };
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -46,6 +85,7 @@ export default function PortfolioPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.altKey && (e.key === "j" || e.key === "J")) {
         e.preventDefault();
+        playSound('switch');
         setIsTypingOpen((prev) => !prev);
       }
     };
@@ -54,6 +94,7 @@ export default function PortfolioPage() {
   }, []);
 
   const handleToggleTheme = (val: boolean | ((prev: boolean) => boolean)) => {
+    playSound('click');
     const nextValue = typeof val === "function" ? val(isDarkMode) : val;
 
     if (typeof window !== "undefined" && document.startViewTransition) {
@@ -96,48 +137,54 @@ export default function PortfolioPage() {
     }
   };
 
-  const handleGoHome = () => {
-    setIsCertModalOpen(false);
+  const handleCloseAllModals = () => {
+    setIsBlogModalOpen(false);
     setIsAllProjectsOpen(false);
-    setIsAllDesignsOpen(false);
+    setIsExpModalOpen(false);
     setIsTechModalOpen(false);
-    setIsMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsCertModalOpen(false);
+    setIsRecModalOpen(false);
+    setIsGalleryModalOpen(false);
   };
 
-  const allDesignsList = [
-    {
-      title: "ZOL Esports Landing Page",
-      desc: "Comprehensive esports organization layout featuring team rosters, tournament schedules, news blocks, and immersive yellow-gold branding.",
-      src: "/zol.png",
-      link: "https://iancarlo.my.canva.site/zol-esports"
-    },
-    {
-      title: "Almost Heaven Hotel & Resort",
-      desc: "Luxury hospitality booking interface highlighting room tiers, reservation selectors, resort amenities, and photo galleries.",
-      src: "/Hotel.png",
-      link: "https://iancarlo.my.canva.site/almost-heaven-hotel"
-    },
-    {
-      title: "Taylor Swift TTPD Store & Tour Portal",
-      desc: "The Tortured Poets Department album store and Eras Tour interactive concept page featuring music players and merch grids.",
-      src: "/PrelimProj_Taylor.png",
-      link: "https://iancarlo.my.canva.site/taylor-swift"
-    },
-    {
-      title: "Cristiano Ronaldo Web Portal",
-      desc: "Dynamic athletic tribute site featuring match countdowns, fixture schedules, career bios, and photo grids.",
-      src: "/ronaldo-portal.png",
-      link: "https://iancarlo.my.canva.site/ronaldo-portal"
-    },
-    {
-      title: "My Photography Portfolio",
-      desc: "Minimalist monochrome creative portfolio showcasing portraiture work, photographer bio, and quick contact channels.",
-      src: "/icgv-photography.png",
-      link: "https://iancarlo.my.canva.site/icgv-photography",
-      fullWidth: true
+  const handleNavigate = (sectionId: string) => {
+    setIsMobileMenuOpen(false);
+    handleCloseAllModals();
+
+    if (sectionId === "about") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
     }
-  ];
+    if (sectionId === "blogs") {
+      setIsBlogModalOpen(true);
+      return;
+    }
+    if (sectionId === "projects") {
+      setProjectModalTab("all");
+      setIsAllProjectsOpen(true);
+      return;
+    }
+    if (sectionId === "experience") {
+      setIsExpModalOpen(true);
+      return;
+    }
+    if (sectionId === "tech-stack") {
+      setIsTechModalOpen(true);
+      return;
+    }
+    if (sectionId === "certifications") {
+      setIsCertModalOpen(true);
+      return;
+    }
+    if (sectionId === "recommendations") {
+      setIsRecModalOpen(true);
+      return;
+    }
+    if (sectionId === "gallery") {
+      setIsGalleryModalOpen(true);
+      return;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col md:flex-row relative w-full">
@@ -158,55 +205,65 @@ export default function PortfolioPage() {
         </button>
       </header>
 
-      {/* Mobile Backdrop Overlay */}
       {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-xs"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-xs" onClick={() => setIsMobileMenuOpen(false)} />
       )}
 
-      {/* Slide-out Sidebar Drawer on Mobile, Sticky Sidebar on Desktop */}
-      <div className={`
-        fixed md:sticky top-0 inset-y-0 left-0 z-50 w-64 h-screen bg-white dark:bg-zinc-950 transition-transform duration-300 ease-in-out
-        ${isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}
-      `}>
+      {/* Sticky Sidebar */}
+      <aside className={`fixed md:sticky top-0 inset-y-0 left-0 z-50 w-64 h-screen bg-white dark:bg-zinc-950 transition-transform duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800 ${isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}>
         <Sidebar 
           isDarkMode={isDarkMode} 
           setIsDarkMode={handleToggleTheme} 
           setIsTypingOpen={(val) => { setIsTypingOpen(val); setIsMobileMenuOpen(false); }}
-          onGoHome={handleGoHome}
-          onOpenProjects={() => { handleGoHome(); setIsAllProjectsOpen(true); }}
-          onOpenDesigns={() => { handleGoHome(); setIsAllDesignsOpen(true); }}
-          onOpenTech={() => { handleGoHome(); setIsTechModalOpen(true); }}
-          onOpenCerts={() => { handleGoHome(); setIsCertModalOpen(true); }}
+          onNavigate={handleNavigate}
         />
-      </div>
+      </aside>
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Cleaned up to match Sidebar order */}
       <div className="flex-1 flex justify-center overflow-x-hidden w-full">
-        <main className="w-full max-w-4xl px-4 md:px-12 py-8 md:py-16 space-y-12 md:space-y-16">
-          <HeroAbout />
-          <StatsBanner />
-          <ProjectsSection onOpenAllProjects={() => setIsAllProjectsOpen(true)} />
-          <DesignPortfolio onOpenAllDesigns={() => setIsAllDesignsOpen(true)} />
-          <TechStack onOpenAllTech={() => setIsTechModalOpen(true)} />
-          <CertificationsSection onOpenModal={() => setIsCertModalOpen(true)} />
+        <main className="w-full max-w-4xl px-4 md:px-12 py-8 md:py-16 space-y-16 md:space-y-24">
+          <div id="about" className="space-y-6">
+            <HeroAbout />
+            <StatsBanner />
+          </div>
+          <div id="blogs"><BlogsSection onOpenModal={() => { handleCloseAllModals(); setIsBlogModalOpen(true); }} /></div>
+          <div id="projects">
+            <ProjectsSection onOpenAllProjects={() => { handleCloseAllModals(); setProjectModalTab("all"); setIsAllProjectsOpen(true); }} />
+          </div>
+          <div id="experience"><ExperienceSection onOpenModal={() => { handleCloseAllModals(); setIsExpModalOpen(true); }} /></div>
+          <div id="tech-stack"><TechStack onOpenAllTech={() => { handleCloseAllModals(); setIsTechModalOpen(true); }} /></div>
+          <div id="certifications"><CertificationsSection onOpenModal={() => { handleCloseAllModals(); setIsCertModalOpen(true); }} /></div>
+          <div id="recommendations"><RecommendationsSection onOpenModal={() => { handleCloseAllModals(); setIsRecModalOpen(true); }} /></div>
+          <div id="gallery" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-400">Gallery</h2>
+              <button
+                onClick={() => { handleCloseAllModals(); setIsGalleryModalOpen(true); }}
+                className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition uppercase tracking-wider cursor-pointer"
+              >
+                view gallery →
+              </button>
+            </div>
+            <div 
+              onClick={() => { handleCloseAllModals(); setIsGalleryModalOpen(true); }}
+              className="p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 text-center font-mono text-xs text-zinc-400 hover:border-zinc-400 dark:hover:border-zinc-600 transition cursor-pointer"
+            >
+              Click to view photo & project gallery snapshot archive...
+            </div>
+          </div>
         </main>
       </div>
 
+      {/* Interactive Modals with Global Close Handler */}
       <TypingTestModal isOpen={isTypingOpen} onClose={() => setIsTypingOpen(false)} />
-      <AllProjectsModal isOpen={isAllProjectsOpen} onClose={() => setIsAllProjectsOpen(false)} />
+      <AllProjectsModal isOpen={isAllProjectsOpen} onClose={handleCloseAllModals} initialCategory={projectModalTab} />
+      <TechStackModal isOpen={isTechModalOpen} onClose={handleCloseAllModals} />
+      <CertificationsModal isOpen={isCertModalOpen} onClose={handleCloseAllModals} />
       
-      {isAllDesignsOpen && (
-        <AllDesignsModal 
-          onClose={() => setIsAllDesignsOpen(false)} 
-          designs={allDesignsList} 
-        />
-      )}
-
-      <TechStackModal isOpen={isTechModalOpen} onClose={() => setIsTechModalOpen(false)} />
-      <CertificationsModal isOpen={isCertModalOpen} onClose={() => setIsCertModalOpen(false)} />
+      <BlogsModal isOpen={isBlogModalOpen} onClose={handleCloseAllModals} />
+      <ExperienceModal isOpen={isExpModalOpen} onClose={handleCloseAllModals} />
+      <RecommendationsModal isOpen={isRecModalOpen} onClose={handleCloseAllModals} />
+      <GalleryModal isOpen={isGalleryModalOpen} onClose={handleCloseAllModals} />
     </div>
   );
 }
