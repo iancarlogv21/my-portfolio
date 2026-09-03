@@ -1,69 +1,181 @@
-import Image from "next/image";
+// app/page.tsx
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from "react";
+import Sidebar from "@/components/Sidebar";
+import HeroAbout from "@/components/HeroAbout";
+import StatsBanner from "@/components/StatsBanner";
+import ProjectsSection from "@/components/ProjectsSection";
+import DesignPortfolio from "@/components/DesignPortfolio";
+import TechStack from "@/components/TechStack";
+import CertificationsSection from "@/components/CertificationsSection";
+import CertificationsModal from "@/components/CertificationsModal";
+import AllProjectsModal from "@/components/AllProjectsModal";
+import AllDesignsModal from "@/components/AllDesignsModal";
+import TypingTestModal from "@/components/TypingTestModal";
+import TechStackModal from "@/components/TechStackModal";
+
+export default function PortfolioPage() {
+  const [isTypingOpen, setIsTypingOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return savedTheme === "dark" || (!savedTheme && prefersDark);
+  });
+  
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
+  const [isAllProjectsOpen, setIsAllProjectsOpen] = useState(false);
+  const [isAllDesignsOpen, setIsAllDesignsOpen] = useState(false);
+  const [isTechModalOpen, setIsTechModalOpen] = useState(false);
+
+  // Centralized HTML root class synchronizer for Tailwind dark mode
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === "j" || e.key === "J")) {
+        e.preventDefault();
+        setIsTypingOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleToggleTheme = (val: boolean | ((prev: boolean) => boolean)) => {
+    const nextValue = typeof val === "function" ? val(isDarkMode) : val;
+
+    if (typeof window !== "undefined" && document.startViewTransition) {
+      // Find the exact center coordinates of the theme toggle button in the sidebar
+      const button = document.querySelector('[aria-label="Toggle Theme"]');
+      let x = 50;
+      let y = window.innerHeight - 50;
+
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        x = rect.left + rect.width / 2;
+        y = rect.top + rect.height / 2;
+      }
+
+      // Calculate maximum radius required to cover the entire viewport
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      const transition = document.startViewTransition(() => {
+        setIsDarkMode(nextValue);
+      });
+
+      transition.ready.then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`
+            ]
+          },
+          {
+            duration: 650,
+            easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+            pseudoElement: "::view-transition-new(root)"
+          }
+        );
+      });
+    } else {
+      setIsDarkMode(nextValue);
+    }
+  };
+
+  const handleGoHome = () => {
+    setIsCertModalOpen(false);
+    setIsAllProjectsOpen(false);
+    setIsAllDesignsOpen(false);
+    setIsTechModalOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const allDesignsList = [
+    {
+      title: "ZOL Esports Landing Page",
+      desc: "Comprehensive esports organization layout featuring team rosters, tournament schedules, news blocks, and immersive yellow-gold branding.",
+      src: "/zol.png",
+      link: "https://iancarlo.my.canva.site/zol-esports"
+    },
+    {
+      title: "Almost Heaven Hotel & Resort",
+      desc: "Luxury hospitality booking interface highlighting room tiers, reservation selectors, resort amenities, and photo galleries.",
+      src: "/Hotel.png",
+      link: "https://iancarlo.my.canva.site/almost-heaven-hotel"
+    },
+    {
+      title: "Taylor Swift TTPD Store & Tour Portal",
+      desc: "The Tortured Poets Department album store and Eras Tour interactive concept page featuring music players and merch grids.",
+      src: "/PrelimProj_Taylor.png",
+      link: "https://iancarlo.my.canva.site/taylor-swift"
+    },
+    {
+      title: "Cristiano Ronaldo Web Portal",
+      desc: "Dynamic athletic tribute site featuring match countdowns, fixture schedules, career bios, and photo grids.",
+      src: "/ronaldo-portal.png",
+      link: "https://iancarlo.my.canva.site/ronaldo-portal"
+    },
+    {
+      title: "My Photography Portfolio",
+      desc: "Minimalist monochrome creative portfolio showcasing portraiture work, photographer bio, and quick contact channels.",
+      src: "/icgv-photography.png",
+      link: "https://iancarlo.my.canva.site/icgv-photography",
+      fullWidth: true
+    }
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex animate-diagonal-reveal">
+      
+      <Sidebar 
+        isDarkMode={isDarkMode} 
+        setIsDarkMode={handleToggleTheme} 
+        setIsTypingOpen={setIsTypingOpen}
+        onGoHome={handleGoHome}
+        onOpenProjects={() => { handleGoHome(); setIsAllProjectsOpen(true); }}
+        onOpenDesigns={() => { handleGoHome(); setIsAllDesignsOpen(true); }}
+        onOpenTech={() => { handleGoHome(); setIsTechModalOpen(true); }}
+        onOpenCerts={() => { handleGoHome(); setIsCertModalOpen(true); }}
+      />
+
+      <div className="flex-1 flex justify-center overflow-x-hidden">
+        <main className="w-full max-w-4xl px-8 md:px-12 py-16 space-y-16">
+          <HeroAbout />
+          <StatsBanner />
+          <ProjectsSection onOpenAllProjects={() => setIsAllProjectsOpen(true)} />
+          <DesignPortfolio onOpenAllDesigns={() => setIsAllDesignsOpen(true)} />
+          <TechStack onOpenAllTech={() => setIsTechModalOpen(true)} />
+          <CertificationsSection onOpenModal={() => setIsCertModalOpen(true)} />
+        </main>
+      </div>
+
+      <TypingTestModal isOpen={isTypingOpen} onClose={() => setIsTypingOpen(false)} />
+      <AllProjectsModal isOpen={isAllProjectsOpen} onClose={() => setIsAllProjectsOpen(false)} />
+      
+      {isAllDesignsOpen && (
+        <AllDesignsModal 
+          onClose={() => setIsAllDesignsOpen(false)} 
+          designs={allDesignsList} 
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      )}
+
+      <TechStackModal isOpen={isTechModalOpen} onClose={() => setIsTechModalOpen(false)} />
+      <CertificationsModal isOpen={isCertModalOpen} onClose={() => setIsCertModalOpen(false)} />
     </div>
   );
 }
