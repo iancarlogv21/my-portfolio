@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import { playSound } from "@/utils/sound";
 
 interface RecommendationsSectionProps {
   onOpenModal: () => void;
@@ -10,22 +11,22 @@ interface RecommendationsSectionProps {
 export default function RecommendationsSection({ onOpenModal }: RecommendationsSectionProps) {
   const recommendations = [
     {
-      name: "Henry Aguda",
-      role: "Secretary, Department of Information and Communications Technology (DICT)",
-      initials: "HA",
-      text: "Ian, I believe, would be the next Philippine unicorn. He is technically skilled and demonstrates remarkable dedication to full-stack engineering."
+      name: "Ver Garcia",
+      role: "Backend & Database Architect",
+      initials: "VG",
+      text: "Working alongside Ian on our 4-member capstone team has been seamless. His mastery of full-stack architecture kept our workshop intelligence system on track."
     },
     {
-      name: "Joshua Shailes",
-      role: "Senior AI Data Scientist",
-      initials: "JS",
-      text: "It was a real pleasure to work with Ian. He's not only a fantastic professional who consistently delivers high-quality work, but he's also an amazing person to have on the team."
+      name: "Ryan Tadeo",
+      role: "Frontend & UI Engineer",
+      initials: "RT",
+      text: "Ian brings incredible technical discipline and drive to our team. Whenever we ran into tough workflow automation bugs, he always stepped up with clean solutions."
     },
     {
-      name: "Cris Lawrence Adrian Militante",
-      role: "Integrations Product Lead",
-      initials: "CM",
-      text: "Ian was the most talented software engineer I've mentored in a long time. He's a fast learner, and he always makes sure to deliver quality output."
+      name: "Ruel Mercado",
+      role: "Systems Architect Partner",
+      initials: "RM",
+      text: "Collaborating with Ian showed me how detail-oriented and resourceful he is when tackling complex backend logic and databases."
     }
   ];
 
@@ -34,8 +35,11 @@ export default function RecommendationsSection({ onOpenModal }: RecommendationsS
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-400">06 — recommendations</h2>
         <button
-          onClick={onOpenModal}
-          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition uppercase tracking-wider cursor-pointer"
+          onClick={() => {
+            playSound('click');
+            onOpenModal();
+          }}
+          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 active:text-zinc-900 dark:active:text-zinc-100 transition uppercase tracking-wider cursor-pointer"
         >
           all recommendations →
         </button>
@@ -43,8 +47,13 @@ export default function RecommendationsSection({ onOpenModal }: RecommendationsS
 
       <div className="space-y-4">
         {recommendations.map((rec, i) => (
-          <div key={i} className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 space-y-4 shadow-sm hover:border-zinc-400 dark:hover:border-zinc-600 transition">
-            <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">&ldquo;{rec.text}&rdquo;</p>
+          <div key={i} className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 space-y-4 shadow-sm hover:border-zinc-400 dark:hover:border-zinc-600 active:border-zinc-500 transition">
+            <p 
+              className="text-sm md:text-base text-zinc-600 dark:text-zinc-300 leading-relaxed"
+              style={{ fontFamily: "'Times New Roman', Times, serif" }}
+            >
+              &ldquo;{rec.text}&rdquo;
+            </p>
             <div className="flex items-center gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
               <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center font-mono text-xs font-bold text-zinc-900 dark:text-zinc-100">
                 {rec.initials}

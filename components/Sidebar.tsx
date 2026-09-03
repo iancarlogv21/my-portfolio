@@ -1,10 +1,11 @@
 // components/Sidebar.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { 
   Sun, 
   Moon, 
+  Monitor,
   Terminal, 
   User,
   FileText, 
@@ -26,6 +27,12 @@ export default function Sidebar({
   setIsTypingOpen,
   onNavigate
 }: SidebarProps) {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
   const [isMuted, setIsMuted] = useState(() => {
     if (typeof window === 'undefined') return false;
     return localStorage.getItem('portfolio_muted') === 'true';
@@ -52,7 +59,7 @@ export default function Sidebar({
   ];
 
   return (
-    <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 p-5 flex flex-col justify-between h-screen sticky top-0 bg-white dark:bg-zinc-950 transition-colors duration-200 select-none z-50 overflow-y-auto">
+    <aside className="w-64 border-r border-zinc-200/50 dark:border-zinc-800/50 p-5 flex flex-col justify-between h-screen sticky top-0 bg-white/75 dark:bg-zinc-950/80 backdrop-blur-xl transition-colors duration-200 select-none z-50 overflow-y-auto shadow-sm">
       <div className="space-y-6">
         
         {/* Profile Branding */}
@@ -67,7 +74,7 @@ export default function Sidebar({
         </div>
 
         {/* Navigation Links */}
-        <nav className="space-y-1.5 font-mono text-xs border-b border-zinc-200 dark:border-zinc-800 pb-5">
+        <nav className="space-y-1.5 font-mono text-xs border-b border-zinc-200/60 dark:border-zinc-800/60 pb-5">
           {navItems.map((item) => {
             const Icon = 'icon' in item ? item.icon : undefined;
             const isProjects = item.id === "projects";
@@ -76,13 +83,16 @@ export default function Sidebar({
               <React.Fragment key={item.id}>
                 {isProjects && (
                   <div className="pt-2 pb-1">
-                    <div className="border-t border-zinc-200 dark:border-zinc-800 my-2" />
+                    <div className="border-t border-zinc-200/60 dark:border-zinc-800/60 my-2" />
                   </div>
                 )}
                 
                 <button 
-                  onClick={() => onNavigate(item.id)}
-                  className={`flex items-center gap-2.5 w-full py-2 px-2.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer ${!Icon ? "pl-[10px]" : ""}`}
+                  onClick={() => {
+                    playSound('click');
+                    onNavigate(item.id);
+                  }}
+                  className={`flex items-center gap-2.5 w-full py-2 px-2.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-900/80 hover:text-zinc-900 dark:hover:text-zinc-100 active:bg-zinc-200/60 dark:active:bg-zinc-900/60 transition cursor-pointer ${!Icon ? "pl-[10px]" : ""}`}
                 >
                   {Icon ? (
                     <div className="w-3.5 h-3.5 flex items-center justify-center shrink-0">
@@ -97,10 +107,13 @@ export default function Sidebar({
         </nav>
 
         {/* Tools */}
-        <div className="space-y-1 font-mono text-xs border-b border-zinc-200 dark:border-zinc-800 pb-4">
+        <div className="space-y-1 font-mono text-xs border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
           <button
-            onClick={() => setIsTypingOpen(true)}
-            className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer"
+            onClick={() => {
+              playSound('click');
+              setIsTypingOpen(true);
+            }}
+            className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-900/80 hover:text-zinc-900 dark:hover:text-zinc-100 active:bg-zinc-200/60 dark:active:bg-zinc-900/60 transition cursor-pointer"
           >
             <span className="flex items-center gap-2.5">
               <Terminal className="h-3.5 w-3.5 text-zinc-400" /> Typing Test
@@ -113,33 +126,57 @@ export default function Sidebar({
       {/* Footer Controls */}
       <div className="space-y-4 pt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+          {/* Theme Pill Toggle */}
+          <div className="flex items-center p-1 rounded-full border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md gap-0.5 shadow-xs">
             <button
-              onClick={() => setIsDarkMode(false)}
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer"
+              onClick={() => {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setIsDarkMode(prefersDark);
+              }}
+              className="p-1.5 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer"
+              title="System Theme"
+            >
+              <Monitor className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => {
+                setIsDarkMode(false);
+              }}
+              className={`p-1.5 rounded-full transition cursor-pointer ${
+                mounted && !isDarkMode 
+                  ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm" 
+                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              }`}
               title="Light Mode"
             >
               <Sun className="h-3.5 w-3.5" />
             </button>
             <button
-              onClick={() => setIsDarkMode(true)}
-              className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer"
+              onClick={() => {
+                setIsDarkMode(true);
+              }}
+              className={`p-1.5 rounded-full transition cursor-pointer ${
+                mounted && isDarkMode 
+                  ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-sm" 
+                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+              }`}
               title="Dark Mode"
             >
               <Moon className="h-3.5 w-3.5" />
             </button>
           </div>
 
+          {/* Circular Mute/Unmute Button */}
           <button
             onClick={handleToggleMute}
-            className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition cursor-pointer"
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md text-zinc-600 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 active:scale-95 transition cursor-pointer shadow-xs"
             title={isMuted ? "Unmute Sounds" : "Mute Sounds"}
           >
             {isMuted ? <VolumeX className="h-4 w-4 text-zinc-900 dark:text-zinc-100" /> : <Volume2 className="h-4 w-4" />}
           </button>
         </div>
 
-        <div className="text-[10px] font-mono text-zinc-500 leading-relaxed pt-2 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="text-[10px] font-mono text-zinc-500 leading-relaxed pt-2 border-t border-zinc-200/60 dark:border-zinc-800/60">
           For work, collabs & everything else, reach me at <span className="text-zinc-900 dark:text-zinc-100 font-semibold break-all">iancarlogv21@gmail.com</span>
         </div>
       </div>

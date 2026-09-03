@@ -1,54 +1,65 @@
-// components/BlogsSection.tsx
+// components/BlogSection.tsx
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { blogs } from "@/data/blogs";
+import BlogsModal from "./BlogsModal";
+import { playSound } from "@/utils/sound";
 
-interface BlogsSectionProps {
-  onOpenModal: () => void;
-}
-
-export default function BlogsSection({ onOpenModal }: BlogsSectionProps) {
-  const posts = [
-    {
-      title: "Being Cringe Is Part of Putting Yourself Out There",
-      date: "Aug 2026",
-      desc: "Reflections on overcoming hesitation, building publicly, and embracing the creator journey as a developer."
-    },
-    {
-      title: "Build Competitors, Not Copies",
-      date: "Aug 2026",
-      desc: "Why innovating on existing paradigms outperforms simple cloning in full-stack architecture and product design."
-    },
-    {
-      title: "Stop Focusing Only on the AI Model. Start Building AI Harnesses.",
-      date: "Jul 2026",
-      desc: "An AI harness is the system surrounding an AI model that makes it reliable, safe, and dependable. Learn why harness engineering is the next big shift."
-    }
-  ];
+export default function BlogSection() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const topBlogs = blogs.slice(0, 3);
 
   return (
-    <section id="blogs" className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-400">01 — blog</h2>
+    <section className="space-y-4">
+      {/* Header with bottom border */}
+      <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
+        <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-400">
+          01 — blog
+        </h2>
         <button
-          onClick={onOpenModal}
-          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition uppercase tracking-wider cursor-pointer"
+          onClick={() => {
+            playSound('click');
+            setIsModalOpen(true);
+          }}
+          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 active:text-zinc-900 dark:active:text-zinc-100 transition uppercase tracking-wider cursor-pointer"
         >
-          all posts →
+          ALL POSTS →
         </button>
       </div>
 
-      <div className="space-y-4">
-        {posts.map((post, i) => (
-          <div key={i} className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 space-y-2 hover:border-zinc-400 dark:hover:border-zinc-600 transition cursor-pointer group">
-            <div className="flex justify-between items-center text-[10px] font-mono text-zinc-400">
-              <span>{post.date}</span>
+      {/* Blog List with clean horizontal dividers */}
+      <div className="divide-y divide-zinc-200 dark:divide-zinc-800/60">
+        {topBlogs.map((post) => (
+          <div
+            key={post.slug}
+            onClick={() => {
+              playSound('click');
+              setIsModalOpen(true);
+            }}
+            className="group py-4 px-2 -mx-2 rounded-lg hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40 active:bg-zinc-200/60 dark:active:bg-zinc-900/60 transition cursor-pointer flex items-start justify-between gap-4"
+          >
+            <div className="space-y-1 flex-1 min-w-0 pr-4">
+              <h3 className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 group-active:text-zinc-600 dark:group-active:text-zinc-300 transition">
+                {post.title}
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-1">
+                {post.snippet}
+              </p>
             </div>
-            <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition">{post.title}</h3>
-            {post.desc && <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">{post.desc}</p>}
+            
+            {/* Fixed-width monospaced date container ensuring perfect vertical alignment */}
+            <div className="text-xs font-mono text-zinc-400 dark:text-zinc-500 text-right shrink-0 pt-0.5 w-20">
+              {post.date}
+            </div>
           </div>
         ))}
       </div>
+
+      <BlogsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 }

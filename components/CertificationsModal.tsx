@@ -95,60 +95,65 @@ export default function CertificationsModal({ isOpen, onClose }: ModalProps) {
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 left-0 md:left-64 z-[99999] bg-white dark:bg-zinc-950 overflow-y-auto p-6 md:p-12 animate-in fade-in duration-200">
-      <div className="max-w-5xl mx-auto space-y-10">
-        
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6">
-          <div>
-            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
-            <h2 className="text-lg font-mono font-bold text-zinc-900 dark:text-zinc-100">All Certifications & Credentials</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-xs font-mono uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition flex items-center gap-2 cursor-pointer bg-zinc-100 dark:bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800"
-          >
-            <X className="h-4 w-4" /> Close
-          </button>
+    <div className="fixed inset-y-0 right-0 left-0 md:left-64 h-screen overflow-hidden z-[99999] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
+      
+      {/* Pinned Sticky Header */}
+      <div className="sticky top-0 z-20 px-6 md:px-12 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl flex items-center justify-between shrink-0">
+        <div>
+          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
+          <h2 className="text-lg font-mono font-bold text-zinc-900 dark:text-zinc-100">All Certifications & Credentials</h2>
         </div>
-
-        {/* Categories Grid */}
-        <div className="space-y-12">
-          {categories.map((cat, catIdx) => (
-            <div key={catIdx} className="space-y-4">
-              <h3 className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">{cat.name}</h3>
-              
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {cat.certs.map((cert, index) => (
-                  <a
-                    key={index}
-                    href={cert.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 bg-white dark:bg-zinc-900/60 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 shadow-sm flex flex-col items-center text-center justify-between space-y-6 group"
-                  >
-                    <div className="w-20 h-20 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center p-3.5 shadow-inner overflow-hidden">
-                      {renderIcon(cert.iconType)}
-                    </div>
-
-                    <div className="space-y-1">
-                      <h4 className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition line-clamp-2">{cert.title}</h4>
-                      <p className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">{cert.issuer}</p>
-                    </div>
-
-                    <div className="pt-2">
-                      <span className="text-xs font-mono text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition tracking-widest">
-                        {'{ VERIFY }'} ↗
-                      </span>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
+        <button
+          onClick={onClose}
+          className="text-xs font-mono uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition flex items-center gap-2 cursor-pointer bg-zinc-100 dark:bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800"
+        >
+          <X className="h-4 w-4" /> Close
+        </button>
       </div>
+
+      {/* Scrollable Content Body */}
+      <div className="flex-1 overflow-y-auto p-6 md:p-12">
+        <div className="max-w-5xl mx-auto space-y-10">
+          
+          {/* Categories Grid */}
+          <div className="space-y-12">
+            {categories.map((cat, catIdx) => (
+              <div key={catIdx} className="space-y-4">
+                <h3 className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">{cat.name}</h3>
+                
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {cat.certs.map((cert, index) => (
+                    <a
+                      key={index}
+                      href={cert.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 bg-white dark:bg-zinc-900/60 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 shadow-sm flex flex-col items-center text-center justify-between space-y-6 group"
+                    >
+                      <div className="w-20 h-20 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center p-3.5 shadow-inner overflow-hidden">
+                        {renderIcon(cert.iconType)}
+                      </div>
+
+                      <div className="space-y-1">
+                        <h4 className="font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition line-clamp-2">{cert.title}</h4>
+                        <p className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">{cert.issuer}</p>
+                      </div>
+
+                      <div className="pt-2">
+                        <span className="text-xs font-mono text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition tracking-widest">
+                          {'{ VERIFY }'} ↗
+                        </span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </div>
+
     </div>
   );
 }
