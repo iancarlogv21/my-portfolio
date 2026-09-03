@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Kill iOS Tap Highlight Delay */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 @variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -36,10 +41,7 @@ body {
   animation: diagonalReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* =========================================
-   Silky Smooth Pure Fade View Transitions
-   ========================================= */
-
+/* Silky Smooth Pure Fade View Transitions */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 350ms;
@@ -80,4 +82,10 @@ body {
   ::view-transition-new(root) {
     animation-duration: 0.01ms !important;
   }
+}
+
+/* Force GPU Layer Acceleration for Sidebar */
+aside {
+  will-change: transform;
+  transform: translateZ(0);
 }

@@ -18,9 +18,10 @@ import RecommendationsSection from "@/components/RecommendationsSection";
 import BlogsModal from "@/components/BlogsModal";
 import ExperienceModal from "@/components/ExperienceModal";
 import RecommendationsModal from "@/components/RecommendationsModal";
-import GalleryModal from "@/components/GalleryModal";
-import CertificationsModal from "@/components/CertificationsModal";
-import AllProjectsModal from "@/components/AllProjectsModal";
+import dynamic from "next/dynamic";
+const GalleryModal = dynamic(() => import("@/components/GalleryModal"), { ssr: false });
+const CertificationsModal = dynamic(() => import("@/components/CertificationsModal"), { ssr: false });
+const AllProjectsModal = dynamic(() => import("@/components/AllProjectsModal"), { ssr: false });
 import TypingTestModal from "@/components/TypingTestModal";
 import TechStackModal from "@/components/TechStackModal";
 
@@ -100,15 +101,15 @@ export default function PortfolioPage() {
       if (!element) return;
 
       const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveSection(id);
-            }
-          });
-        },
-        { threshold: 0.25 }
-      );
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        setActiveSection((prev) => (prev !== id ? id : prev));
+      }
+    });
+  },
+  { threshold: 0.25 }
+);
 
       observer.observe(element);
       observers.push(observer);
