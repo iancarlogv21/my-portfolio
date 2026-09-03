@@ -143,7 +143,7 @@ export default function PortfolioPage() {
     <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans flex flex-col md:flex-row animate-diagonal-reveal relative">
       
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-50">
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 sticky top-0 z-40">
         <div>
           <h1 className="font-mono font-bold text-xs text-zinc-900 dark:text-zinc-100">Ian Carlo G. Ventura</h1>
           <p className="text-[10px] font-mono text-zinc-400">Full-Stack Web Developer</p>
@@ -157,8 +157,19 @@ export default function PortfolioPage() {
         </button>
       </div>
 
-      {/* Sidebar: Hidden on mobile unless menu toggle is clicked, sticky on desktop */}
-      <div className={`${isMobileMenuOpen ? "block" : "hidden"} md:block fixed md:sticky inset-y-0 left-0 z-50 w-64 h-full md:h-screen bg-white dark:bg-zinc-950`}>
+      {/* Mobile Backdrop Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-xs"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Slide-out Sidebar Drawer on Mobile, Sticky Sidebar on Desktop */}
+      <div className={`
+        fixed md:sticky top-0 inset-y-0 left-0 z-50 w-64 h-screen bg-white dark:bg-zinc-950 transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}
+      `}>
         <Sidebar 
           isDarkMode={isDarkMode} 
           setIsDarkMode={handleToggleTheme} 
