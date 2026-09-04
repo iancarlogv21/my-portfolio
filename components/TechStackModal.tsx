@@ -99,22 +99,20 @@ export default function TechStackModal({
         </div>
       )}
 
-      {/* Pinned Sticky Header (Offset with pt-14 on mobile to clear the fixed header) */}
-      <div className="sticky top-0 z-20 px-6 md:px-12 py-6 pt-20 md:pt-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 md:backdrop-blur-xl backdrop-blur-md flex items-center justify-between shrink-0">
-        <div>
-          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
-          <h2 className="text-lg font-mono font-bold text-zinc-900 dark:text-zinc-100">All Technical & Design Stack</h2>
-        </div>
-      </div>
-
-      {/* Scrollable Content Body */}
-      <div className="flex-1 overflow-y-auto p-6 md:p-12 pb-24">
-        <div className="max-w-5xl mx-auto space-y-10">
+      {/* Scrollable Content Body with reduced top padding */}
+      <div className="flex-1 overflow-y-auto p-6 md:p-12 pb-24 pt-4 md:pt-6">
+        <div className="max-w-5xl mx-auto space-y-8">
+          
+          {/* Unpinned Header Section */}
+          <div className="border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
+            <h2 className="text-lg font-mono font-bold text-zinc-900 dark:text-zinc-100">All Technical & Design Stack</h2>
+          </div>
           
           {/* Categories Grid */}
-          <div className="space-y-12">
+          <div className="space-y-10">
             {categories.map((cat, catIdx) => (
-              <div key={catIdx} className="space-y-4">
+              <div key={catIdx} className="space-y-3">
                 <h3 className="text-[11px] font-mono uppercase tracking-widest text-zinc-400">{cat.title}</h3>
                 
                 <div className="flex flex-wrap gap-3">
