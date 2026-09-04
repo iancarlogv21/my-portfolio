@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, RefreshCw, Trophy, Zap } from "lucide-react";
+import { X, RefreshCw, Trophy, Zap, Terminal, Code, Cpu } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface TypingTestModalProps {
@@ -10,10 +10,17 @@ interface TypingTestModalProps {
   onClose: () => void;
 }
 
-const SAMPLE_TEXT =
-  "const deploy = async () => { console.log('Building scalable web applications'); };";
+const SAMPLE_TEXTS = [
+  "const deploy = async () => { console.log('Building scalable web applications'); };",
+  "function optimizeQuery(database, query) { return database.aggregate(query); }",
+  "interface SystemConfig { readonly endpoint: string; timeoutMs: number; }",
+  "docker build -t felms-app:latest --build-arg NODE_ENV=production .",
+  "git commit -m 'refactor: streamline MongoDB aggregation pipeline performance'"
+];
 
 export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProps) {
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [activeText, setActiveText] = useState(SAMPLE_TEXTS[0]);
   const [input, setInput] = useState("");
   const [startTime, setStartTime] = useState<number | null>(null);
   const [wpm, setWpm] = useState<number | null>(null);
@@ -21,26 +28,57 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
   const [isCompleted, setIsCompleted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Wrap in useCallback to stabilize the function for React
+  const selectRandomText = useCallback((excludeIndex?: number) => {
+    let nextIndex;
+    do {
+      nextIndex = Math.floor(Math.random() * SAMPLE_TEXTS.length);
+    } while (nextIndex === excludeIndex && SAMPLE_TEXTS.length > 1);
+    
+    setCurrentTextIndex(nextIndex);
+    setActiveText(SAMPLE_TEXTS[nextIndex]);
+  }, []);
+
   const resetTest = useCallback(() => {
+    selectRandomText(currentTextIndex);
     setInput("");
     setStartTime(null);
     setWpm(null);
     setAccuracy(null);
     setIsCompleted(false);
-  }, []);
+  }, [currentTextIndex, selectRandomText]);
 
-  // 2. Make the update asynchronous to prevent cascading renders
+  // Handle modal opening, focus, and keyboard shortcuts (Esc and Alt+J)
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+      // Alt + J shortcut to reset or trigger test variations
+      if (e.altKey && e.code === "KeyJ" && isOpen) {
+        e.preventDefault();
+        resetTest();
+        inputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
     if (isOpen) {
       const timer = setTimeout(() => {
         resetTest();
         inputRef.current?.focus();
       }, 50);
       
-      return () => clearTimeout(timer); // Cleanup function
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     }
-  }, [isOpen, resetTest]);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, resetTest, onClose]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -51,17 +89,17 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
     setInput(value);
 
     // Completion check
-    if (value.length >= SAMPLE_TEXT.length) {
+    if (value.length >= activeText.length) {
       const elapsedMinutes = (Date.now() - (startTime || Date.now())) / 60000;
       const wordsTyped = value.length / 5;
       const calculatedWpm = Math.round(wordsTyped / (elapsedMinutes || 0.01));
 
       // Calculate accuracy
       let correctChars = 0;
-      for (let i = 0; i < SAMPLE_TEXT.length; i++) {
-        if (value[i] === SAMPLE_TEXT[i]) correctChars++;
+      for (let i = 0; i < activeText.length; i++) {
+        if (value[i] === activeText[i]) correctChars++;
       }
-      const calculatedAccuracy = Math.round((correctChars / SAMPLE_TEXT.length) * 100);
+      const calculatedAccuracy = Math.round((correctChars / activeText.length) * 100);
 
       setWpm(calculatedWpm);
       setAccuracy(calculatedAccuracy);
@@ -74,30 +112,31 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950 font-mono text-zinc-900 dark:text-zinc-100"
+          className="relative w-full max-w-xl rounded-2xl border border-zinc-200 bg-white p-4 sm:p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950 font-mono text-zinc-900 dark:text-zinc-100 my-auto"
         >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-            <div className="flex items-center gap-2 text-sm font-semibold">
+            <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold">
               <Zap className="h-4 w-4 text-amber-500" />
               <span>Speed Typing Challenge</span>
             </div>
             <button
               onClick={onClose}
-              className="rounded-lg p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+              className="rounded-lg p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+              aria-label="Close modal"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
           {/* Prompt Display */}
-          <div className="my-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 p-4 leading-relaxed text-sm">
-            {SAMPLE_TEXT.split("").map((char, index) => {
+          <div className="my-5 sm:my-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 p-3 sm:p-4 leading-relaxed text-xs sm:text-sm overflow-x-auto whitespace-pre-wrap break-all">
+            {activeText.split("").map((char, index) => {
               let color = "text-zinc-400 dark:text-zinc-600";
               if (index < input.length) {
                 color =
@@ -113,18 +152,26 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
             })}
           </div>
 
-          {/* Hidden Input Area */}
+          {/* Hidden/Active Input Area */}
           {!isCompleted ? (
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Start typing here..."
-              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-4 py-2.5 text-sm outline-none focus:border-zinc-900 dark:focus:border-zinc-100 transition"
-            />
+            <div className="space-y-3">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={handleInputChange}
+                placeholder="Start typing code snippet here..."
+                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 sm:px-4 py-2.5 text-xs sm:text-sm outline-none focus:border-zinc-900 dark:focus:border-zinc-100 transition"
+              />
+              <div className="flex items-center justify-between text-[10px] sm:text-xs text-zinc-400 px-1">
+                <span className="flex items-center gap-1">
+                  <Terminal className="h-3 w-3" /> Auto-generates syntax snippets
+                </span>
+                <span className="hidden sm:inline">Shortcut: Alt + J</span>
+              </div>
+            </div>
           ) : (
-            <div className="flex items-center justify-around rounded-xl bg-zinc-100 dark:bg-zinc-900 p-4">
+            <div className="flex flex-col sm:flex-row items-center justify-around gap-4 rounded-xl bg-zinc-100 dark:bg-zinc-900 p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-emerald-500">{wpm}</div>
                 <div className="text-xs text-zinc-500">WPM</div>
@@ -135,17 +182,17 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
               </div>
               <button
                 onClick={resetTest}
-                className="flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 px-3 py-2 text-xs font-semibold text-white dark:text-zinc-900"
+                className="w-full sm:w-auto flex items-center justify-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-xs font-semibold text-white dark:text-zinc-900 transition hover:opacity-90"
               >
-                <RefreshCw className="h-3 w-3" /> Retry
+                <RefreshCw className="h-3 w-3" /> Retry / New Code
               </button>
             </div>
           )}
 
-          <div className="mt-4 flex justify-between text-xs text-zinc-400">
-            <span>Press Esc or Close button to exit</span>
+          <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-900 flex flex-col sm:flex-row justify-between items-center text-[10px] sm:text-xs text-zinc-400 gap-2">
+            <span>Press Esc to exit or Alt + J to reset</span>
             <span className="flex items-center gap-1">
-              <Trophy className="h-3 w-3" /> Quick Benchmark
+              <Cpu className="h-3 w-3 text-zinc-500" /> Developer Benchmark
             </span>
           </div>
         </motion.div>
