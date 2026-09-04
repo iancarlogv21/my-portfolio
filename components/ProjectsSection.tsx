@@ -23,6 +23,7 @@ export default function ProjectsSection({ onOpenAllProjects }: ProjectsProps) {
       category: "Academic System",
       desc: "High-performance digital catalog and circulation platform utilizing NoSQL MongoDB aggregation pipelines.",
       src: "/FELMS.png",
+      "link": "https://felms.onrender.com",
     }
   ];
 
@@ -68,7 +69,7 @@ export default function ProjectsSection({ onOpenAllProjects }: ProjectsProps) {
                     View Live ↗
                   </a>
                 ) : (
-                  <span className="text-xs font-mono text-zinc-400">Private Repository</span>
+                  <span className="text-xs font-mono text-zinc-400">View Live ↗</span>
                 )}
               </div>
 

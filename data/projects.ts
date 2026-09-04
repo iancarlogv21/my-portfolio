@@ -27,7 +27,7 @@ export const portfolioItems: ProjectItem[] = [
   "desc": "High-performance digital catalog and circulation platform utilizing NoSQL MongoDB aggregation pipelines.",
   "src": "/FELMS.png",
   "link": "https://felms.onrender.com",
-  "actionText": "{ PRIVATE REPOSITORY }"
+  "actionText": "{ VIEW LIVE } ↗"
 },
   // Console Applications
   {
