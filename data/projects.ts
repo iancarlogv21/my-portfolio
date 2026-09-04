@@ -21,14 +21,14 @@ export const portfolioItems: ProjectItem[] = [
     actionText: "{ VIEW PACKAGE } ↗",
   },
   {
-    title: "FELMS — Library Management System",
-    tag: "ACADEMIC SYSTEM",
-    category: "websites-apps",
-    desc: "High-performance digital catalog and circulation platform utilizing NoSQL MongoDB aggregation pipelines.",
-    src: "/FELMS.png",
-    link: "https://github.com/iancarlogv",
-    actionText: "{ PRIVATE REPOSITORY }",
-  },
+  "title": "FELMS — Library Management System",
+  "tag": "ACADEMIC SYSTEM",
+  "category": "websites-apps",
+  "desc": "High-performance digital catalog and circulation platform utilizing NoSQL MongoDB aggregation pipelines.",
+  "src": "/FELMS.png",
+  "link": "https://felms.onrender.com",
+  "actionText": "{ PRIVATE REPOSITORY }"
+},
   // Console Applications
   {
     title: "cs50p-review (CS50P Final Project)",
