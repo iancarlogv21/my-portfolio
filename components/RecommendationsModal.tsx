@@ -1,16 +1,21 @@
-// components/RecommendationsModal.tsx
+// components/RecommendationsModal.tsx[cite: 7]
 "use client";
 
 import React from "react";
-import { X } from "lucide-react";
-import { playSound } from "@/utils/sound";
+import MobileHeader from "@/components/MobileHeader";
 
 interface RecommendationsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onOpenMobileMenu?: () => void;
+  onNavigate?: (sectionId: string) => void;
 }
 
-export default function RecommendationsModal({ isOpen, onClose }: RecommendationsModalProps) {
+export default function RecommendationsModal({ 
+  isOpen, 
+  onOpenMobileMenu, 
+  onNavigate 
+}: RecommendationsModalProps) {
   if (!isOpen) return null;
 
   const recommendations = [
@@ -43,26 +48,26 @@ export default function RecommendationsModal({ isOpen, onClose }: Recommendation
   return (
     <div className="fixed inset-y-0 right-0 left-0 md:left-64 h-screen overflow-hidden z-[99999] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
       
-      {/* Pinned Sticky Header */}
-      <div className="sticky top-0 z-20 px-6 md:px-16 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-3xl flex items-center justify-between shrink-0">
-        <div>
-          <h1 className="font-mono text-xl font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">06 — recommendations</h1>
-          <p className="text-xs text-zinc-500 font-mono mt-1">Endorsements from capstone teammates and collaborative partners.</p>
+      {/* Persistent Global Mobile Header */}
+      {onOpenMobileMenu && onNavigate && (
+        <div className="md:hidden shrink-0">
+          <MobileHeader 
+            onOpenMobileMenu={onOpenMobileMenu} 
+            onNavigate={onNavigate} 
+          />
         </div>
-        <button 
-          onClick={() => {
-            playSound('click');
-            onClose();
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs font-mono text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 active:border-zinc-500 active:scale-95 transition cursor-pointer"
-        >
-          <X className="h-4 w-4" /> Close
-        </button>
-      </div>
+      )}
 
-      {/* Scrollable Content Body */}
-      <div className="flex-1 overflow-y-auto p-6 md:p-16">
+      {/* Scrollable Content Body with Natural Scrolling Title */}
+      <div className="flex-1 overflow-y-auto p-6 md:p-16 pb-24">
         <div className="max-w-4xl mx-auto space-y-8">
+          
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
+            <h1 className="font-mono text-xl font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">06 — recommendations</h1>
+            <p className="text-xs text-zinc-500 font-mono mt-1">Endorsements from capstone teammates and collaborative partners.</p>
+          </div>
+
           <div className="space-y-6">
             {recommendations.map((rec, i) => (
               <div key={i} className="p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 space-y-4 shadow-sm">

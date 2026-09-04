@@ -2,19 +2,23 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { portfolioItems, ProjectItem } from "@/data/projects";
+import MobileHeader from "@/components/MobileHeader";
 
 interface AllProjectsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
   initialCategory?: string;
+  onOpenMobileMenu?: () => void;
+  onNavigate?: (sectionId: string) => void;
 }
 
 export default function AllProjectsModal({
   isOpen,
-  onClose,
   initialCategory = "all",
+  onOpenMobileMenu,
+  onNavigate,
 }: AllProjectsModalProps) {
   const [activeTab, setActiveTab] = useState<string>(initialCategory);
 
@@ -34,29 +38,29 @@ export default function AllProjectsModal({
   return (
     <div className="fixed inset-y-0 right-0 left-0 md:left-64 h-screen overflow-hidden z-[99999] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
       
-      {/* Pinned Sticky Header */}
-      <div className="sticky top-0 z-20 px-6 md:px-12 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 md:backdrop-blur-xl backdrop-blur-md flex items-center justify-between shrink-0">
-        <div>
-          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-            Archive
-          </span>
-          <h2 className="text-xl font-mono font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            Projects <span className="text-xs text-zinc-400 font-normal">[{portfolioItems.length}]</span>
-          </h2>
+      {/* Persistent Global Mobile Header */}
+      {onOpenMobileMenu && onNavigate && (
+        <div className="md:hidden shrink-0">
+          <MobileHeader 
+            onOpenMobileMenu={onOpenMobileMenu} 
+            onNavigate={onNavigate} 
+          />
         </div>
+      )}
 
-        <button
-          onClick={onClose}
-          className="text-xs font-mono uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition flex items-center gap-2 cursor-pointer bg-zinc-100 dark:bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800"
-        >
-          <X className="h-4 w-4" />
-          Close
-        </button>
-      </div>
-
-      {/* Scrollable Content Body */}
-      <div className="flex-1 overflow-y-auto p-6 md:p-12">
+      {/* Scrollable Content Body with Natural Scrolling Title */}
+      <div className="flex-1 overflow-y-auto p-6 md:p-12 pb-24">
         <div className="max-w-5xl mx-auto space-y-8">
+
+          {/* Page Title */}
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+              Archive
+            </span>
+            <h2 className="text-xl font-mono font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+              Projects <span className="text-xs text-zinc-400 font-normal">[{portfolioItems.length}]</span>
+            </h2>
+          </div>
 
           {/* Filter Navigation Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 w-fit">
@@ -97,8 +101,6 @@ export default function AllProjectsModal({
                   className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-5 md:p-6 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 shadow-sm group"
                 >
                   <div className="flex flex-col md:flex-row gap-6 items-center">
-
-                    {/* Thumbnail */}
                     <div className="w-full md:w-[40%] h-52 md:h-60 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 overflow-hidden relative shadow-inner flex-shrink-0 p-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -108,7 +110,6 @@ export default function AllProjectsModal({
                       />
                     </div>
 
-                    {/* Details */}
                     <div className="flex flex-col justify-center flex-1 space-y-3 w-full">
                       <span className="w-fit text-[10px] font-mono uppercase tracking-wider text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-md">
                         {item.tag}
@@ -127,7 +128,6 @@ export default function AllProjectsModal({
                         {item.actionText}
                       </span>
                     </div>
-
                   </div>
                 </a>
               ))

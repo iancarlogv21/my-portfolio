@@ -118,7 +118,7 @@ export default function Sidebar({
     { label: "Stack", id: "tech-stack" },
     { label: "Certifications", id: "certifications" },
     { label: "Recommendations", id: "recommendations" },
-    { label: "Gallery", id: "gallery" },
+    
   ];
 
   return (

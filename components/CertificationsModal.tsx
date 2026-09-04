@@ -2,14 +2,20 @@
 "use client";
 
 import React from "react";
-import { X } from "lucide-react";
+import MobileHeader from "@/components/MobileHeader";
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface CertificationsModalProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  onOpenMobileMenu?: () => void;
+  onNavigate?: (sectionId: string) => void;
 }
 
-export default function CertificationsModal({ isOpen, onClose }: ModalProps) {
+export default function CertificationsModal({ 
+  isOpen, 
+  onOpenMobileMenu, 
+  onNavigate 
+}: CertificationsModalProps) {
   if (!isOpen) return null;
 
   const categories = [
@@ -97,24 +103,25 @@ export default function CertificationsModal({ isOpen, onClose }: ModalProps) {
   return (
     <div className="fixed inset-y-0 right-0 left-0 md:left-64 h-screen overflow-hidden z-[99999] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
       
-      {/* Pinned Sticky Header */}
-      <div className="sticky top-0 z-20 px-6 md:px-12 py-6 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 md:backdrop-blur-xl backdrop-blur-md flex items-center justify-between shrink-0">
-        <div>
-          <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
-          <h2 className="text-lg font-mono font-bold text-zinc-900 dark:text-zinc-100">All Certifications & Credentials</h2>
+      {/* Persistent Global Mobile Header */}
+      {onOpenMobileMenu && onNavigate && (
+        <div className="md:hidden shrink-0">
+          <MobileHeader 
+            onOpenMobileMenu={onOpenMobileMenu} 
+            onNavigate={onNavigate} 
+          />
         </div>
-        <button
-          onClick={onClose}
-          className="text-xs font-mono uppercase tracking-wider text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition flex items-center gap-2 cursor-pointer bg-zinc-100 dark:bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800"
-        >
-          <X className="h-4 w-4" /> Close
-        </button>
-      </div>
+      )}
 
-      {/* Scrollable Content Body */}
-      <div className="flex-1 overflow-y-auto p-6 md:p-12">
+      {/* Scrollable Content Body with Natural Scrolling Title */}
+      <div className="flex-1 overflow-y-auto p-6 md:p-12 pb-24">
         <div className="max-w-5xl mx-auto space-y-10">
           
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Archive</span>
+            <h2 className="text-xl font-mono font-bold text-zinc-900 dark:text-zinc-100">All Certifications & Credentials</h2>
+          </div>
+
           {/* Categories Grid */}
           <div className="space-y-12">
             {categories.map((cat, catIdx) => (
