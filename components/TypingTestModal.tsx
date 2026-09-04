@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, RefreshCw, Trophy, Zap, Terminal, Code, Cpu } from "lucide-react";
+import { X, RefreshCw, Zap, Terminal, Cpu } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface TypingTestModalProps {
@@ -19,8 +19,10 @@ const SAMPLE_TEXTS = [
 ];
 
 export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProps) {
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [activeText, setActiveText] = useState(SAMPLE_TEXTS[0]);
+  // Lazy initialization automatically picks a random snippet fresh every time the modal mounts
+  const [activeText, setActiveText] = useState(() => 
+    SAMPLE_TEXTS[Math.floor(Math.random() * SAMPLE_TEXTS.length)]
+  );
   const [input, setInput] = useState("");
   const [startTime, setStartTime] = useState<number | null>(null);
   const [wpm, setWpm] = useState<number | null>(null);
@@ -28,33 +30,23 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
   const [isCompleted, setIsCompleted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const selectRandomText = useCallback((excludeIndex?: number) => {
-    let nextIndex;
-    do {
-      nextIndex = Math.floor(Math.random() * SAMPLE_TEXTS.length);
-    } while (nextIndex === excludeIndex && SAMPLE_TEXTS.length > 1);
-    
-    setCurrentTextIndex(nextIndex);
-    setActiveText(SAMPLE_TEXTS[nextIndex]);
-  }, []);
-
   const resetTest = useCallback(() => {
-    selectRandomText(currentTextIndex);
+    const randomIndex = Math.floor(Math.random() * SAMPLE_TEXTS.length);
+    setActiveText(SAMPLE_TEXTS[randomIndex]);
     setInput("");
     setStartTime(null);
     setWpm(null);
     setAccuracy(null);
     setIsCompleted(false);
-  }, [currentTextIndex, selectRandomText]);
+  }, []);
 
-  // Handle modal opening, focus, and keyboard shortcuts (Esc and Alt+J)
+  // Effect is strictly used for keyboard listeners (Escape and Alt+J) and autofocusing on mount
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape") {
         onClose();
       }
-      // Alt + J shortcut to reset or trigger test variations
-      if (e.altKey && e.code === "KeyJ" && isOpen) {
+      if (e.altKey && (e.key === "j" || e.key === "J" || e.code === "KeyJ")) {
         e.preventDefault();
         resetTest();
         inputRef.current?.focus();
@@ -63,22 +55,15 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
 
     window.addEventListener("keydown", handleKeyDown);
 
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        resetTest();
-        inputRef.current?.focus();
-      }, 50);
-      
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener("keydown", handleKeyDown);
-      };
-    }
+    const timer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
 
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, resetTest, onClose]);
+  }, [onClose, resetTest]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -94,7 +79,6 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
       const wordsTyped = value.length / 5;
       const calculatedWpm = Math.round(wordsTyped / (elapsedMinutes || 0.01));
 
-      // Calculate accuracy
       let correctChars = 0;
       for (let i = 0; i < activeText.length; i++) {
         if (value[i] === activeText[i]) correctChars++;
@@ -152,7 +136,7 @@ export default function TypingTestModal({ isOpen, onClose }: TypingTestModalProp
             })}
           </div>
 
-          {/* Hidden/Active Input Area */}
+          {/* Input Area */}
           {!isCompleted ? (
             <div className="space-y-3">
               <input
