@@ -23,7 +23,7 @@ import dynamic from "next/dynamic";
 
 const CertificationsModal = dynamic(() => import("@/components/CertificationsModal"), { ssr: false });
 const AllProjectsModal = dynamic(() => import("@/components/AllProjectsModal"), { ssr: false });
-import TypingTestModal from "@/components/TypingTestModal";
+
 import TechStackModal from "@/components/TechStackModal";
 
 import { playSound } from "@/utils/sound";
@@ -232,7 +232,6 @@ export default function PortfolioPage() {
         <Sidebar 
           isDarkMode={isDarkMode}
           setIsDarkMode={setIsDarkMode}
-          setIsTypingOpen={setIsTypingOpen}
           onNavigate={handleNavigate}
           activeSection={activeSection}
         />
@@ -295,8 +294,8 @@ export default function PortfolioPage() {
         </main>
       </div>
 
-      {/* Interactive Modals with Unified Mobile Header Integration */}
-      <TypingTestModal isOpen={isTypingOpen} onClose={() => setIsTypingOpen(false)} />
+     
+      
 
       <SafeAllProjectsModal 
         isOpen={isAllProjectsOpen} 
