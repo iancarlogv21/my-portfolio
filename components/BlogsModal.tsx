@@ -1,10 +1,11 @@
-// components/BlogsModal.tsx[cite: 2]
+// components/BlogsModal.tsx
 "use client";
 
 import React, { useState } from "react";
 import { LayoutList, LayoutGrid, ArrowLeft } from "lucide-react";
 import { blogs, BlogPost } from "@/data/blogs";
 import MobileHeader from "@/components/MobileHeader";
+import { playSound } from "@/utils/sound";
 
 interface BlogsModalProps {
   isOpen?: boolean;
@@ -55,14 +56,22 @@ export default function BlogsModal({
               {!selectedPost && (
                 <div className="flex items-center p-1 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
                   <button
-                    onClick={() => setIsGrid(false)}
+                    onClick={() => {
+                      playSound('click');
+                      setIsGrid(false);
+                    }}
+                    
                     className={`p-1.5 rounded-md transition cursor-pointer ${!isGrid ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" : "text-zinc-400 hover:text-zinc-700"}`}
                     title="List View"
                   >
                     <LayoutList className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => setIsGrid(true)}
+                    onClick={() => {
+                      playSound('click');
+                      setIsGrid(true);
+                    }}
+                    
                     className={`p-1.5 rounded-md transition cursor-pointer ${isGrid ? "bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100" : "text-zinc-400 hover:text-zinc-700"}`}
                     title="Grid View"
                   >
@@ -73,10 +82,14 @@ export default function BlogsModal({
 
               {selectedPost && (
                 <button
-                  onClick={() => setSelectedPost(null)}
+                  onClick={() => {
+                    playSound('click');
+                    setSelectedPost(null);
+                  }}
+                  
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-xs font-mono text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition cursor-pointer"
                 >
-                  <ArrowLeft className="h-4 w-4" /> Back
+                  <ArrowLeft className="h-4 w-4" /> 
                 </button>
               )}
             </div>
@@ -97,7 +110,13 @@ export default function BlogsModal({
               {blogs.map((post) => (
                 <div 
                   key={post.slug} 
-                  onClick={() => setSelectedPost(post)}
+                  onClick={() => {
+                    playSound('click');
+                    setSelectedPost(post);
+                  }}
+                  onMouseEnter={() => {
+                    
+                  }}
                   className={`group cursor-pointer p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 hover:border-zinc-400 dark:hover:border-zinc-600 transition ${isGrid ? "flex flex-col space-y-4" : "flex flex-col md:flex-row gap-6 items-start"}`}
                 >
                   <div className={`${isGrid ? "w-full h-48" : "w-full md:w-48 h-32 shrink-0"} rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950`}>

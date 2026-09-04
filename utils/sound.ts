@@ -1,5 +1,5 @@
 // utils/sound.ts
-export const playSound = (type: 'click' | 'switch' | 'hover') => {
+export const playSound = (type: 'click' | 'switch') => {
   if (typeof window === 'undefined') return;
   
   const isMuted = localStorage.getItem('portfolio_muted') === 'true';
@@ -8,7 +8,6 @@ export const playSound = (type: 'click' | 'switch' | 'hover') => {
   const soundFiles: Record<string, string> = {
     click: '/sounds/click.mp3',
     switch: '/sounds/switch.mp3',
-    hover: '/sounds/hover.mp3',
   };
 
   const path = soundFiles[type];

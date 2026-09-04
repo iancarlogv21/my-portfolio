@@ -118,13 +118,16 @@ export default function PortfolioPage() {
 
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement).closest('button, a, [role="button"]');
+      const target = e.target instanceof Element 
+        ? e.target.closest('button, a, [role="button"], .group, img, [class*="cursor-pointer"]') 
+        : null;
       if (target) {
         playSound('click');
       }
     };
 
     document.addEventListener('click', handleGlobalClick);
+    
     return () => {
       document.removeEventListener('click', handleGlobalClick);
     };
@@ -142,15 +145,20 @@ export default function PortfolioPage() {
   }, [isDarkMode]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.altKey && (e.key === "j" || e.key === "J")) {
-        e.preventDefault();
-        playSound('switch');
-        setIsTypingOpen((prev) => !prev);
+    const handleGlobalClick = (e: MouseEvent) => {
+      const node = e.target as Node;
+      const element = node?.nodeType === 3 ? node.parentElement : (node as Element);
+      const target = element?.closest?.('button, a, [role="button"], .group, img, [class*="cursor-pointer"]');
+      if (target) {
+        playSound('click');
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    document.addEventListener('click', handleGlobalClick);
+    
+    return () => {
+      document.removeEventListener('click', handleGlobalClick);
+    };
   }, []);
 
   const handleCloseAllModals = () => {
