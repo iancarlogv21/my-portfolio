@@ -18,7 +18,7 @@ export const portfolioItems: ProjectItem[] = [
     desc: "Enterprise automotive management system featuring client scheduling, maintenance tracking, and operational analytics.",
     src: "/FONZO.png",
     link: "https://fonzo-calibrations.onrender.com/",
-    actionText: "{ VIEW PACKAGE } ↗",
+    actionText: "{ VIEW LIVE } ↗",
   },
   {
   "title": "FELMS — Library Management System",
