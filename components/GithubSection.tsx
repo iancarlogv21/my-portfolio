@@ -1,8 +1,8 @@
 // components/GithubSection.tsx
 "use client";
 
-import React, { useSyncExternalStore } from "react";
-import { GitHubCalendar } from "react-github-calendar";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
+import { GitHubCalendar, type Activity } from "react-github-calendar";
 
 export default function GithubSection() {
   const isMounted = useSyncExternalStore(
@@ -14,48 +14,110 @@ export default function GithubSection() {
   const isDarkMode = useSyncExternalStore(
     (callback) => {
       const observer = new MutationObserver(callback);
-      observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+
       return () => observer.disconnect();
     },
     () => document.documentElement.classList.contains("dark"),
     () => false
   );
 
-  const customTheme = {
-    light: ['#f4f4f5', '#e4e4e7', '#a1a1aa', '#52525b', '#18181b'],
-    dark: ['#18181b', '#27272a', '#52525b', '#a1a1aa', '#f4f4f5'],
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isMounted) {
+      const timer = setTimeout(() => {
+        const svg = document.querySelector(".github-calendar-container svg");
+        if (svg) {
+          svg.setAttribute("preserveAspectRatio", "none");
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isMounted]);
+
+  const theme = {
+    light: [
+      "#f4f4f5",
+      "#d4d4d8",
+      "#a1a1aa",
+      "#52525b",
+      "#18181b",
+    ],
+    dark: [
+      "#18181b",
+      "#3f3f46",
+      "#71717a",
+      "#a1a1aa",
+      "#f4f4f5",
+    ],
+  };
+
+  const handleDataTransform = (data: Activity[]): Activity[] => {
+    const total = data.reduce((sum, day) => sum + day.count, 0);
+    queueMicrotask(() => {
+      setTotalCount(total);
+    });
+    return data;
   };
 
   return (
-    <div id="github" className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-400">07. GitHub Activity</h2>
-        <a 
-          href="https://github.com/iancarlogv21" 
-          target="_blank" 
+    <section id="github" className="space-y-4 w-full">
+      <div className="flex items-center justify-between w-full">
+        <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-400">
+          07. GitHub Activity
+        </h2>
+        <a
+          href="https://github.com/iancarlogv21"
+          target="_blank"
           rel="noopener noreferrer"
-          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition tracking-wider"
+          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors duration-200"
         >
-          iancarlogv21 ↗
+          @IANCARLOGV21 ↗
         </a>
       </div>
 
-      <div className="p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 flex flex-col items-center justify-center overflow-x-auto min-h-[140px]">
+      <div className="w-full github-calendar-container">
         {!isMounted ? (
-          <div className="text-xs font-mono text-zinc-400 animate-pulse py-4">Loading activity...</div>
+          <div className="flex min-h-[150px] items-center justify-center">
+            <span className="text-xs font-mono text-zinc-400">
+              Loading contributions...
+            </span>
+          </div>
         ) : (
-          <div className="w-full flex justify-center">
-            <GitHubCalendar 
+          <div className="w-full">
+            <GitHubCalendar
               username="iancarlogv21"
-              blockSize={9}
-              blockMargin={3}
+              blockSize={11}
+              blockMargin={5}
               fontSize={11}
-              theme={customTheme}
+              theme={theme}
               colorScheme={isDarkMode ? "dark" : "light"}
+              transformData={handleDataTransform}
             />
           </div>
         )}
       </div>
-    </div>
+
+      <div>
+        <p className="text-xs font-mono tracking-wider text-zinc-600 dark:text-zinc-300 uppercase">
+          {totalCount !== null ? `${totalCount.toLocaleString()} CONTRIBUTIONS IN THE LAST YEAR` : "LOADING CONTRIBUTIONS..."}
+        </p>
+      </div>
+
+      <style jsx global>{`
+        .github-calendar-container footer {
+          display: none !important;
+        }
+        .github-calendar-container svg {
+          width: 100% !important;
+          height: auto !important;
+        }
+      `}</style>
+    </section>
   );
 }
