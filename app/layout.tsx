@@ -14,8 +14,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ian Carlo G. Ventura — Full-Stack Web Developer",
-  description: "Portfolio showcasing full-stack web development projects, UI/UX designs, and technical credentials.",
+  title: "Ian Carlo | Full-Stack Portfolio",
+  description: "Full-stack development and software engineering portfolio highlighting real-world applications and technical implementations.",
+  icons: {
+    icon: { url: "/IanCarlo.png", type: "image/png" },
+  },
 };
 
 export const viewport = {

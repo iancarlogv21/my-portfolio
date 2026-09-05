@@ -269,7 +269,7 @@ export default function PortfolioPage() {
             {/* Swipeable Photo Strip on Mobile (Displays 2 at a time), 4-Col Grid on Desktop */}
             <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-3 md:gap-4 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {[
-                { src: "/iann.jpg", title: "Portrait" },
+                { src: "/carlo.png", title: "Portrait" },
                 { src: "/personal-2.jpg", title: "Workspace" },
                 { src: "/personal-3.jpg", title: "Out & About" },
                 { src: "/personal-4.jpg", title: "Memories" }
