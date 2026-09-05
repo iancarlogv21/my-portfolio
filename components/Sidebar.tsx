@@ -9,7 +9,8 @@ import {
   User,
   FileText, 
   Volume2,
-  VolumeX
+  VolumeX,
+  Mail
 } from "lucide-react";
 import { playSound } from "@/utils/sound";
 
@@ -177,7 +178,7 @@ export default function Sidebar({
       </div>
 
       {/* Footer Controls */}
-      <div className="space-y-4 pt-4">
+      <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center justify-between">
           {/* Theme Pill Toggle */}
           <div className="flex items-center p-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 gap-0.5">
@@ -225,8 +226,16 @@ export default function Sidebar({
           </button>
         </div>
 
-        <div className="text-[10px] font-mono text-zinc-500 leading-relaxed pt-2 border-t border-zinc-200 dark:border-zinc-800">
-          For work, collabs & everything else, reach me at <span className="text-zinc-900 dark:text-zinc-100 font-semibold break-all">iancarlogv21@gmail.com</span>
+        {/* Contact Info */}
+        <div className="space-y-1.5 text-[10px] font-mono text-zinc-500 leading-relaxed">
+          <p>For work, collabs & everything else, reach me at</p>
+          <a
+            href="mailto:iancarlogv21@gmail.com"
+            className="inline-flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-semibold hover:font-bold hover:text-black dark:hover:text-white transition-all duration-200 cursor-pointer"
+          >
+            <Mail className="h-3.5 w-3.5" />
+            <span className="break-all">iancarlogv21@gmail.com</span>
+          </a>
         </div>
       </div>
     </aside>
