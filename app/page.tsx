@@ -44,7 +44,7 @@ const SafeRecommendationsModal = RecommendationsModal as any;
 const SafeTechStackModal = TechStackModal as any;
 
 export default function PortfolioPage() {
-  const [isTypingOpen, setIsTypingOpen] = useState(false);
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("about");
   
@@ -65,7 +65,7 @@ export default function PortfolioPage() {
   const [isRecModalOpen, setIsRecModalOpen] = useState(false);
 
   const isAnyModalOpen = 
-    isTypingOpen || 
+  
     isAllProjectsOpen || 
     isTechModalOpen || 
     isCertModalOpen || 
@@ -169,6 +169,23 @@ export default function PortfolioPage() {
     document.title = sectionTitle;
   }, [activeSection, isBlogModalOpen, isAllProjectsOpen, isExpModalOpen, isTechModalOpen, isCertModalOpen, isRecModalOpen]);
 
+  
+
+  useEffect(() => {
+    const handlePopState = () => {
+      handleCloseAllModals();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      window.history.pushState({ modalOpen: true }, "");
+    }
+  }, [isAnyModalOpen]);
+
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const node = e.target as Node;
@@ -186,16 +203,37 @@ export default function PortfolioPage() {
     };
   }, []);
 
-  const handleCloseAllModals = () => {
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const node = e.target as Node;
+      const element = node?.nodeType === 3 ? node.parentElement : (node as Element);
+      const target = element?.closest?.('button, a, [role="button"], .group, img, [class*="cursor-pointer"]');
+      if (target) {
+        playSound('click');
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    
+    return () => {
+      document.removeEventListener('click', handleGlobalClick);
+    };
+  }, []);
+
+  
+
+  
+
+  function handleCloseAllModals() {
     setIsBlogModalOpen(false);
     setIsAllProjectsOpen(false);
     setIsExpModalOpen(false);
     setIsTechModalOpen(false);
     setIsCertModalOpen(false);
     setIsRecModalOpen(false);
-  };
+  }
 
-  const handleNavigate = (sectionId: string) => {
+  function handleNavigate(sectionId: string) {
     setIsMobileMenuOpen(false);
     handleCloseAllModals();
     setActiveSection(sectionId);
@@ -249,16 +287,24 @@ export default function PortfolioPage() {
 
       {/* Mobile Menu Backdrop */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-black/50 z-[100000] md:hidden backdrop-blur-xs" onClick={() => setIsMobileMenuOpen(false)} />
+        <div className="fixed inset-0 bg-black/50 z-100000 md:hidden backdrop-blur-xs" onClick={() => setIsMobileMenuOpen(false)} />
       )}
 
       {/* Sticky Sidebar */}
-      <aside className={`fixed md:sticky top-0 inset-y-0 left-0 z-[100001] w-64 h-screen bg-white dark:bg-zinc-950 transition-transform duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800 ${isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}>
+      <aside className={`fixed md:sticky top-0 inset-y-0 left-0 z-100001 w-64 h-screen bg-white dark:bg-zinc-950 transition-transform duration-300 ease-in-out border-r border-zinc-200 dark:border-zinc-800 ${isMobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"}`}>
         <Sidebar 
           isDarkMode={isDarkMode}
           setIsDarkMode={setIsDarkMode}
           onNavigate={handleNavigate}
-          activeSection={activeSection}
+          activeSection={
+            isBlogModalOpen ? "blogs" :
+            isAllProjectsOpen ? "projects" :
+            isExpModalOpen ? "experience" :
+            isTechModalOpen ? "tech-stack" :
+            isCertModalOpen ? "certifications" :
+            isRecModalOpen ? "recommendations" :
+            activeSection
+          }
         />
       </aside>
 
@@ -292,7 +338,7 @@ export default function PortfolioPage() {
             </div>
 
             {/* Swipeable Photo Strip on Mobile (Displays 2 at a time), 4-Col Grid on Desktop */}
-            <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-3 md:gap-4 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex md:grid md:grid-cols-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-3 md:gap-4 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-none]">
               {[
                 { src: "/carlo.png", title: "Portrait" },
                 { src: "/personal-2.jpg", title: "Workspace" },
@@ -301,7 +347,7 @@ export default function PortfolioPage() {
               ].map((item, idx) => (
                 <div 
                   key={idx} 
-                  className="group relative flex-shrink-0 w-[calc(50%-6px)] sm:w-[calc(50%-8px)] md:w-full h-48 sm:h-56 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 shadow-sm snap-start cursor-pointer"
+                  className="group relative shrink-0 w-[calc(50%-6px)] sm:w-[calc(50%-8px)] md:w-full h-48 sm:h-56 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 shadow-sm snap-start cursor-pointer"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img 
@@ -309,7 +355,7 @@ export default function PortfolioPage() {
                     alt={item.title} 
                     className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500 ease-out" 
                   />
-                  <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  <div className="absolute inset-x-0 bottom-0 p-3 bg-linear-to-t from-black/80 via-black/40 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                     <span className="text-xs font-mono text-white tracking-wider">{item.title}</span>
                   </div>
                 </div>
