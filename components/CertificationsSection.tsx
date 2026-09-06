@@ -10,11 +10,11 @@ interface CertSectionProps {
 export default function CertificationsSection({ onOpenModal }: CertSectionProps) {
   return (
     <section id="certifications" className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-400">05 — certifications</h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-xs sm:text-sm font-mono uppercase tracking-wider text-zinc-400">05 — certifications</h2>
         <button
           onClick={onOpenModal}
-          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition uppercase tracking-wider cursor-pointer self-start sm:self-auto"
+          className="text-[11px] sm:text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition uppercase tracking-wider cursor-pointer whitespace-nowrap"
         >
           all certifications →
         </button>
