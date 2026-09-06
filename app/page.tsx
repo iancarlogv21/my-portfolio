@@ -144,6 +144,31 @@ export default function PortfolioPage() {
     }
   }, [isDarkMode]);
 
+  // 👉 Place it right here:
+  useEffect(() => {
+    let sectionTitle = "Ian Carlo - Web Developer";
+
+    if (isBlogModalOpen || activeSection === "blogs") {
+      sectionTitle = "Blogs | Ian Carlo - Web Developer";
+    } else if (isAllProjectsOpen || activeSection === "projects") {
+      sectionTitle = "Projects | Ian Carlo - Web Developer";
+    } else if (isExpModalOpen || activeSection === "experience") {
+      sectionTitle = "Experience | Ian Carlo - Web Developer";
+    } else if (isTechModalOpen || activeSection === "tech-stack") {
+      sectionTitle = "Tech Stack | Ian Carlo - Web Developer";
+    } else if (isCertModalOpen || activeSection === "certifications") {
+      sectionTitle = "Certifications | Ian Carlo - Web Developer";
+    } else if (isRecModalOpen || activeSection === "recommendations") {
+      sectionTitle = "Recommendations | Ian Carlo - Web Developer";
+    } else if (activeSection === "github") {
+      sectionTitle = "GitHub Activity | Ian Carlo - Web Developer";
+    } else if (activeSection === "gallery") {
+      sectionTitle = "Gallery | Ian Carlo - Web Developer";
+    }
+
+    document.title = sectionTitle;
+  }, [activeSection, isBlogModalOpen, isAllProjectsOpen, isExpModalOpen, isTechModalOpen, isCertModalOpen, isRecModalOpen]);
+
   useEffect(() => {
     const handleGlobalClick = (e: MouseEvent) => {
       const node = e.target as Node;
