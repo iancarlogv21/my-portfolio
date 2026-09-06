@@ -25,7 +25,7 @@ export default function BlogsModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-white dark:bg-zinc-950 flex flex-col">
+    <div className="fixed inset-y-0 right-0 left-0 md:left-64 h-screen overflow-hidden z-[99999] bg-white dark:bg-zinc-950 flex flex-col animate-in fade-in duration-200">
       
       {/* Persistent Global Mobile Header */}
       {onOpenMobileMenu && onNavigate && (
