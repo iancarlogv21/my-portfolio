@@ -1,13 +1,15 @@
 // components/BlogSection.tsx
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { blogs } from "@/data/blogs";
-import BlogsModal from "./BlogsModal";
 import { playSound } from "@/utils/sound";
 
-export default function BlogSection() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+interface BlogSectionProps {
+  onOpenModal?: () => void;
+}
+
+export default function BlogSection({ onOpenModal }: BlogSectionProps) {
   const topBlogs = blogs.slice(0, 3);
 
   return (
@@ -20,7 +22,7 @@ export default function BlogSection() {
         <button
           onClick={() => {
             playSound('click');
-            setIsModalOpen(true);
+            if (onOpenModal) onOpenModal();
           }}
           className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 active:text-zinc-900 dark:active:text-zinc-100 transition uppercase tracking-wider cursor-pointer"
         >
@@ -35,7 +37,7 @@ export default function BlogSection() {
             key={post.slug}
             onClick={() => {
               playSound('click');
-              setIsModalOpen(true);
+              if (onOpenModal) onOpenModal();
             }}
             className="group py-4 px-2 -mx-2 rounded-lg hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40 active:bg-zinc-200/60 dark:active:bg-zinc-900/60 transition cursor-pointer flex items-start justify-between gap-4"
           >
@@ -55,11 +57,6 @@ export default function BlogSection() {
           </div>
         ))}
       </div>
-
-      <BlogsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </section>
   );
 }
