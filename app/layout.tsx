@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ian Carlo | Full-Stack Portfolio",
+  title: "Ian Carlo  - Web Developer",
   description: "Full-stack development and software engineering portfolio highlighting real-world applications and technical implementations.",
   icons: {
     icon: "/IanCarlo.png",
