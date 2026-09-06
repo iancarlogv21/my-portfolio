@@ -32,14 +32,14 @@ export default function RecommendationsSection({ onOpenModal }: RecommendationsS
 
   return (
     <section id="recommendations" className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-400">06 — recommendations</h2>
         <button
           onClick={() => {
             playSound('click');
             onOpenModal();
           }}
-          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 active:text-zinc-900 dark:active:text-zinc-100 transition uppercase tracking-wider cursor-pointer"
+          className="text-xs font-mono text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 active:text-zinc-900 dark:active:text-zinc-100 transition uppercase tracking-wider cursor-pointer self-start sm:self-auto"
         >
           all recommendations →
         </button>
