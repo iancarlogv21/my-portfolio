@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   title: "Ian Carlo | Full-Stack Portfolio",
   description: "Full-stack development and software engineering portfolio highlighting real-world applications and technical implementations.",
   icons: {
-    icon: { url: "/IanCarlo.png", type: "image/png" },
+    icon: "/IanCarlo.png",
+    shortcut: "/IanCarlo.png",
+    apple: "/IanCarlo.png",
   },
 };
 
