@@ -12,7 +12,7 @@ export default function ProjectsSection({ onOpenAllProjects }: ProjectsProps) {
     {
       id: "fonzo",
       title: "FONZO AutoService",
-      category: "Capstone Project",
+      category: "QA Project",
       desc: "Enterprise automotive management system featuring client scheduling, maintenance tracking, and operational analytics.",
       src: "/FONZO.png",
       link: "https://fonzo-calibrations.onrender.com/",
