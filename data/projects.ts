@@ -13,7 +13,7 @@ export const portfolioItems: ProjectItem[] = [
   // Websites & Apps
   {
     title: "FONZO AutoService",
-    tag: "CAPSTONE PROJECT",
+    tag: "QA PROJECT",
     category: "websites-apps",
     desc: "Enterprise automotive management system featuring client scheduling, maintenance tracking, and operational analytics.",
     src: "/FONZO.png",

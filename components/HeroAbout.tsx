@@ -25,7 +25,7 @@ export default function HeroAbout() {
           </div>
         ) : (
           <Image
-            src="/IanCarlo.png"
+            src="/carlo.png"
             alt="Ian Carlo G. Ventura"
             fill
             sizes="(min-width: 768px) 192px, 176px"
