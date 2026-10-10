@@ -25,9 +25,15 @@ export default function ExperienceModal({
       subtitle: "City College of San Fernando, Pampanga", 
       desc: "Current academic standing focusing on full-stack web engineering, and enterprise system architecture" 
     },
+     { 
+      year: "2026", 
+      title: "Certifications & Credentials", 
+      subtitle: "Harvard CS50P, Google Analytics, Credly", 
+      desc: "Earned industry-recognized credentials in Python programming, data tracking, and cybersecurity fundamentals." 
+    },
     { 
       year: "2026", 
-      title: "Capstone Project", 
+      title: "QA Project", 
       subtitle: "FONZO AutoService (FONZO Calibration and Car Services Co.)", 
       desc: "Developing automotive workshop intelligence systems, client scheduling tools, and production-ready workflow automation as our 4th-year capstone project." 
     },
@@ -36,12 +42,6 @@ export default function ExperienceModal({
       title: "Advanced Systems & Case Studies", 
       subtitle: "FELMS & Full-Stack Systems", 
       desc: "Engineered NoSQL MongoDB aggregation pipelines, digital library management portals, and comprehensive data analytics case studies." 
-    },
-    { 
-      year: "2025", 
-      title: "Professional Certifications", 
-      subtitle: "Harvard CS50P, Google Analytics, Credly", 
-      desc: "Earned industry-recognized credentials in Python programming, data tracking, and cybersecurity fundamentals." 
     },
     { 
       year: "2024", 
