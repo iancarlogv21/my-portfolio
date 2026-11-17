@@ -31,7 +31,7 @@ export default function HeroAbout() {
             sizes="(min-width: 768px) 192px, 176px"
             loading="eager"
             fetchPriority="high"
-            className="object-cover grayscale group-hover:scale-105 group-active:scale-105 transition-transform duration-300"
+            className="object-cover group-hover:scale-105 group-active:scale-105 transition-transform duration-300"
             onError={() => setImageError(true)}
           />
         )}
